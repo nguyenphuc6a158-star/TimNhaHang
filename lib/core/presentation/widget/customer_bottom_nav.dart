@@ -16,7 +16,7 @@ class _CustomerBottomNavState extends State<CustomerBottomNav> {
     Icons.home,
     Icons.save,
     Icons.history,
-    Icons.account_balance,
+    Icons.account_circle,
   ];
 
   @override
@@ -31,7 +31,7 @@ class _CustomerBottomNavState extends State<CustomerBottomNav> {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-              color: Colors.redAccent, 
+              color: Colors.blue,
               boxShadow: const [BoxShadow(
                     color: Colors.black45, 
                     blurRadius: 4)], 
@@ -48,7 +48,7 @@ class _CustomerBottomNavState extends State<CustomerBottomNav> {
                 },
                 child: Icon(
                   _icons[index],
-                  color: currentIndex == index ?Colors.blue : Colors.amber,
+                  color: currentIndex == index ?Colors.amber : Colors.white,
                   size: 28,
                   ),
                 );

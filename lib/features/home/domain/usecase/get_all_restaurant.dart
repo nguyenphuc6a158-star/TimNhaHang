@@ -4,5 +4,5 @@ import 'package:timnhahang/features/home/domain/repositories/restaurant_reposito
 class GetAllRestaurants{
   final RestaurantRepository repository;
   GetAllRestaurants(this.repository);
-  Future<List<Restaurant>> call() => repository.getRestaurats();
+  Future<List<Restaurant>> call() => repository.getRestaurants();
 }

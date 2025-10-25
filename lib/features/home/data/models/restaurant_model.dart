@@ -31,4 +31,17 @@ class RestaurantModel extends Restaurant {
       rating: data['rating'] ?? 0,
     );
   }
+  Map<String, dynamic> toJson() => {
+    'address': address,
+    'category': category,
+    'city': city,
+    'closing': closing,
+    'coordinates': coordinates,
+    'district': district,
+    'imageUrl': imageUrl,
+    'name': name,
+    'opening': opening,
+    'priceRange': priceRange,
+    'rating': rating,
+  };
 }

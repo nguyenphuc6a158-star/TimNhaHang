@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 // dependencies:
 //   font_awesome_flutter: ^10.7.0
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:timnhahang/core/routing/app_routes.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -280,10 +282,7 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               TextButton(
-                                onPressed: () {
-                                  // TODO: Chuyển đến trang Đăng ký
-                                  print("Chuyển đến trang Đăng ký");
-                                },
+                                onPressed: () => context.go(AppRoutes.signup),
                                 child: const Text(
                                   "Đăng ký",
                                   style: TextStyle(

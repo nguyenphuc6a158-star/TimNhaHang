@@ -7,5 +7,6 @@ abstract class UserRepository {
 
   // Cập nhật profile
   Future<void> updateProfile(User user);
-
+  // THÊM: Phương thức tạo profile
+  Future<void> createProfile(User user);
 }

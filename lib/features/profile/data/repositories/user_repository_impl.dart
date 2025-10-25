@@ -30,4 +30,17 @@ class UserRepositoryImpl implements UserRepository {
     );
     await remoteDataSource.updateProfile(userModel);
   }
+  @override
+  Future<void> createProfile(User user) async {
+    // Chuyển Entity sang Model
+    final userModel = UserModel(
+      uid: user.uid,
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL,
+      phoneNumber: user.phoneNumber,
+      createdAt: user.createdAt,
+    );
+    await remoteDataSource.createProfile(userModel);
+  }
 }

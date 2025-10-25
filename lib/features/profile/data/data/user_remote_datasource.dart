@@ -5,6 +5,8 @@ import 'package:timnhahang/features/profile/data/models/user_model.dart';
 abstract class UserRemoteDataSource {
   Future<UserModel> getUserProfile(String uid);
   Future<void> updateProfile(UserModel user);
+  // THÊM: Phương thức tạo profile
+  Future<void> createProfile(UserModel user);
 }
 
 // Triển khai thực tế để tương tác với Firestore
@@ -23,7 +25,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       throw Exception('User profile not found for UID: $uid');
     }
   }
-
+  @override
+  Future<void> createProfile(UserModel user) async {
+    // Dùng .set() để đảm bảo tài liệu được tạo nếu chưa có
+    await firestore.collection('users').doc(user.uid).set(user.toMap());
+  }
   @override
   Future<void> updateProfile(UserModel user) async {
     await firestore.collection('users').doc(user.uid).update(user.toMap());

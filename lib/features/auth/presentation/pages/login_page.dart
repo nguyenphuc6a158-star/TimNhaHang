@@ -1,8 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// TODO: Đảm bảo bạn đã thêm package này vào file pubspec.yaml:
-// dependencies:
-//   font_awesome_flutter: ^10.7.0
+// Sử dụng Tiền tố 'fb' cho Firebase Auth
+import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:cloud_firestore/cloud_firestore.dart'; // Thêm: Dùng cho Firestore
+// Import Profile dependencies
+import 'package:timnhahang/features/profile/domain/usecase/get_user_profile.dart';
+import 'package:timnhahang/features/profile/domain/usecase/create_user_profile.dart';
+import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dart';
+import 'package:timnhahang/features/profile/data/repositories/user_repository_impl.dart';
+import 'package:timnhahang/features/profile/domain/entities/user.dart'; // Lớp User Entity của bạn
+// Các imports khác của bạn
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timnhahang/core/routing/app_routes.dart';
@@ -17,22 +23,90 @@ class _LoginPageState extends State<LoginPage> {
   final emailCtrl = TextEditingController();
   final passCtrl = TextEditingController();
   String? error;
+  bool _isLoggingIn = false;
 
-  // Hàm đăng nhập bằng Email/Pass (từ code gốc của bạn)
+  // Khai báo Usecase
+  late final GetUserProfile getUserProfileUseCase;
+  late final CreateUserProfile createProfileUseCase;
+
+
+  @override
+  void initState() {
+    super.initState();
+    // Nối dây (DI) các Usecase cần thiết cho Profile
+    final firestore = FirebaseFirestore.instance;
+    final remoteDataSource = UserRemoteDataSourceImpl(firestore: firestore);
+    final repository = UserRepositoryImpl(remoteDataSource: remoteDataSource);
+
+    getUserProfileUseCase = GetUserProfile(repository);
+    createProfileUseCase = CreateUserProfile(repository);
+  }
+
+  // HÀM ĐÃ SỬA: Đảm bảo tài khoản có Profile trên Firestore
+  Future<void> _ensureProfileExists(String uid, String email, String? photoUrl) async {
+    try {
+      // 1. Thử tải Profile. Nếu thành công -> Tài khoản đã có Profile (Ok)
+      await getUserProfileUseCase.call(uid);
+
+    } catch (e) {
+      // 2. Nếu thất bại (Lỗi: 'User profile not found')
+      if (e.toString().contains('User profile not found')) {
+
+        // Đây là tài khoản Auth cũ chưa có Profile Firestore. -> TẠO NÓ NGAY LẬP TỨC.
+        // SỬ DỤNG LỚP User Entity của bạn
+        final User initialProfile = User(
+          uid: uid,
+          displayName: '',
+          email: email,
+          // Lấy photoURL từ Firebase Auth (nếu có) hoặc mặc định là rỗng
+          photoURL: photoUrl ?? '',
+          phoneNumber: '',
+          // Sử dụng Timestamp.now() để lưu thời điểm tạo profile
+          createdAt: Timestamp.now(),
+        );
+
+        // Gọi Usecase tạo Profile
+        await createProfileUseCase.call(initialProfile);
+
+        print('Profile Firestore đã được tự động tạo cho tài khoản cũ: $uid');
+
+      } else {
+        // Ném lỗi khác nếu có vấn đề nghiêm trọng hơn
+        rethrow;
+      }
+    }
+  }
+
+
+  // Hàm đăng nhập bằng Email/Pass (đã sửa)
   Future<void> _login() async {
-    // Ẩn bàn phím
     FocusScope.of(context).unfocus();
 
-    setState(() => error = null); // Xóa lỗi cũ
+    setState(() {
+      error = null;
+      _isLoggingIn = true; // Bắt đầu loading
+    });
+
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      // SỬ DỤNG TIỀN TỐ fb. cho FirebaseAuth
+      final fb.UserCredential userCredential = await fb.FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailCtrl.text.trim(),
         password: passCtrl.text,
       );
-      // Đăng nhập thành công, bạn có thể điều hướng tại đây
-      // ví dụ: Navigator.of(context).pushReplacement(...);
-    } on FirebaseAuthException catch (e) {
-      // Xử lý lỗi
+
+      final uid = userCredential.user!.uid;
+      final email = userCredential.user!.email!;
+      final photoUrl = userCredential.user!.photoURL; // Lấy photoURL
+
+      // KIỂM TRA PROFILE FIRESTORE (QUAN TRỌNG CHO TÀI KHOẢN CŨ VÀ MỚI)
+      await _ensureProfileExists(uid, email, photoUrl); // Truyền photoUrl vào
+
+      // Đăng nhập thành công và profile đã tồn tại/được tạo.
+      if (mounted) {
+        // Điều hướng đến trang chính
+        context.go(AppRoutes.home); // Ví dụ: Điều hướng về trang Home
+      }
+    } on fb.FirebaseAuthException catch (e) { // SỬ DỤNG TIỀN TỐ fb.
       if (e.code == 'user-not-found') {
         setState(() => error = 'Không tìm thấy người dùng với email này.');
       } else if (e.code == 'wrong-password') {
@@ -43,36 +117,31 @@ class _LoginPageState extends State<LoginPage> {
         setState(() => error = 'Đã xảy ra lỗi: ${e.message}');
       }
     } catch (e) {
-      setState(() => error = 'Đã xảy ra lỗi. Vui lòng thử lại.');
+      setState(() => error = 'Đã xảy ra lỗi. Vui lòng thử lại. Lỗi Profile: $e');
+    } finally {
+      // Luôn dừng loading
+      setState(() => _isLoggingIn = false);
     }
   }
 
-  // Hàm đăng nhập với Google (mới)
+  // Hàm đăng nhập với Google (giữ nguyên, nhưng bạn nên thêm _ensureProfileExists sau khi đăng nhập Auth thành công)
   Future<void> _signInWithGoogle() async {
-    // Ẩn bàn phím
     FocusScope.of(context).unfocus();
     setState(() => error = null); // Xóa lỗi cũ nếu có
 
     // TODO: Viết logic đăng nhập Google tại đây
-    // Bạn sẽ cần dùng package 'google_sign_in'
-    print("Đăng nhập Google");
-
-    // (Logic ví dụ)
-    // try {
-    //   // ... code đăng nhập Google ...
-    // } catch (e) {
-    //   setState(() => error = 'Đăng nhập Google thất bại.');
-    // }
+    // Sau khi đăng nhập Google thành công và lấy được UserCredential,
+    // bạn phải gọi _ensureProfileExists(user.uid, user.email!, user.photoURL) tương tự như trên.
+    print("Đăng nhập Google (cần thêm logic _ensureProfileExists)");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Cho phép body hiển thị đằng sau AppBar
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent, // Nền trong suốt
-        elevation: 0, // Bỏ bóng mờ
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
@@ -80,13 +149,11 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: Stack(
         children: [
-          // Lớp 1: Ảnh nền từ Internet
+          // Lớp 1: Ảnh nền
           Positioned.fill(
             child: Image.network(
-              // Đây là ảnh ví dụ, bạn có thể thay bằng URL bất kỳ:
               'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop',
               fit: BoxFit.cover,
-              // Hiệu ứng mờ dần khi tải ảnh
               frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
                 if (wasSynchronouslyLoaded) return child;
                 return AnimatedOpacity(
@@ -96,14 +163,12 @@ class _LoginPageState extends State<LoginPage> {
                   child: child,
                 );
               },
-              // Hiển thị vòng xoay khi chờ tải ảnh
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
                 return const Center(
                   child: CircularProgressIndicator(color: Colors.white),
                 );
               },
-              // Hiển thị icon lỗi nếu không tải được ảnh
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   color: Colors.grey[800],
@@ -121,7 +186,6 @@ class _LoginPageState extends State<LoginPage> {
           // Lớp 2: Lớp phủ mờ tối
           Positioned.fill(
             child: Container(
-              // Bạn có thể tăng/giảm opacity để tăng độ tối
               color: Colors.black.withOpacity(0.45),
             ),
           ),
@@ -137,20 +201,17 @@ class _LoginPageState extends State<LoginPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // Khoảng đệm để nội dung không bị AppBar che
-                          SizedBox(height: 30),
-
-                          // Tiêu đề
+                          const SizedBox(height: 30),
                           const Text(
                             "Đăng Nhập hoặc Đăng Ký",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 20, // Chỉnh nhỏ lại một chút
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 30), // Giảm khoảng cách
+                          const SizedBox(height: 30),
                           // Nút Đăng nhập Gmail
                           ElevatedButton.icon(
                             onPressed: _signInWithGoogle,
@@ -163,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(
                                 0xFFE53935,
-                              ), // Màu đỏ
+                              ),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
@@ -257,11 +318,10 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 20),
 
-                          // Nút Đăng nhập (sử dụng hàm _login của bạn)
+                          // Nút Đăng nhập
                           ElevatedButton(
-                            onPressed: _login, // <-- Sử dụng hàm gốc
+                            onPressed: _isLoggingIn ? null : _login,
                             style: ElevatedButton.styleFrom(
-                              // Bạn có thể đổi màu này
                               backgroundColor: Colors.deepPurpleAccent,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -273,7 +333,13 @@ class _LoginPageState extends State<LoginPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            child: const Text("Đăng nhập"),
+                            child: _isLoggingIn
+                                ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                            )
+                                : const Text("Đăng nhập"),
                           ),
                           const SizedBox(height: 16),
 
@@ -317,8 +383,7 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: Text.rich(
                       TextSpan(
-                        text:
-                            "Bằng cách đăng nhập hoặc đăng ký, bạn đồng ý với ",
+                        text: "Bằng cách đăng nhập hoặc đăng ký, bạn đồng ý với ",
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 12,
@@ -332,11 +397,6 @@ class _LoginPageState extends State<LoginPage> {
                               decoration: TextDecoration.underline,
                               decorationColor: Colors.white,
                             ),
-                            // Thêm recognizer nếu bạn muốn làm cho nó có thể nhấp được
-                            // import 'package:flutter/gestures.dart';
-                            // recognizer: TapGestureRecognizer()..onTap = () {
-                            //   // TODO: Mở link chính sách
-                            // },
                           ),
                         ],
                       ),

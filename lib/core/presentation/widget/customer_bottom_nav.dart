@@ -14,6 +14,9 @@ class _CustomerBottomNavState extends State<CustomerBottomNav> {
 
   final List<IconData> _icons = [
     Icons.home,
+    Icons.save,
+    Icons.history,
+    Icons.account_balance,
   ];
 
   @override
@@ -58,7 +61,16 @@ class _CustomerBottomNavState extends State<CustomerBottomNav> {
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
       case 0:
-        context.go(AppRoutes.notes);
+        context.go(AppRoutes.home);
+        break;
+      case 1:
+        context.go(AppRoutes.saved);
+        break;
+      case 2:
+        context.go(AppRoutes.history);
+        break;
+      case 3:
+        context.go(AppRoutes.profile);
         break;
     }
   }

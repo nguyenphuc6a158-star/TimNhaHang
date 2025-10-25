@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:timnhahang/core/routing/go_router_refresh_change.dart';
 import 'package:timnhahang/features/auth/presentation/pages/login_page.dart';
 import 'package:timnhahang/features/auth/presentation/pages/signup_page.dart';
+import 'package:timnhahang/features/home/presentation/pages/home_page.dart';
 import 'package:timnhahang/features/notes/presentation/pages/notes_list_page.dart';
 
 class AppGoRouter {
@@ -31,8 +32,8 @@ class AppGoRouter {
         },
         routes: [
           GoRoute(
-            path: AppRoutes.notes,
-            builder: (context, state) => const NotesListPage(),
+            path: AppRoutes.home,
+            builder: (context, state) => const HomePage(),
           ),
         ],
       ),
@@ -45,7 +46,7 @@ class AppGoRouter {
           state.matchedLocation == AppRoutes.signup;
       if (!loggedIn && !loggingIn) return AppRoutes.login;
 
-      if (loggedIn && loggingIn) return AppRoutes.notes;
+      if (loggedIn && loggingIn) return AppRoutes.home;
       return null;
     },
     refreshListenable: GoRouterRefreshStream(

@@ -18,8 +18,11 @@ class FirebaseRemoteDS<T> {
 
   /// Get all documents in the collection
   Future<List<T>> getAll() async {
-    final snapshot = await _collection.orderBy('id', descending: true).get();
-    return snapshot.docs.map((e) => fromFirestore(e)).toList();
+    final snapshot = await _collection.get();
+    return snapshot.docs.map((doc) {
+      final data = fromFirestore(doc);
+      return data;
+    }).toList();
   }
 
   /// Get a single document by ID

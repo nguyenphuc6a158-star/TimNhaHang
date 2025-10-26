@@ -9,7 +9,6 @@ import 'package:timnhahang/features/auth/presentation/pages/login_page.dart';
 import 'package:timnhahang/features/auth/presentation/pages/signup_page.dart';
 import 'package:timnhahang/features/history/presentation/page/history_page.dart';
 import 'package:timnhahang/features/home/presentation/pages/home_page.dart';
-import 'package:timnhahang/features/notes/presentation/pages/notes_list_page.dart';
 import 'package:timnhahang/features/profile/presentation/pages/profile_page.dart';
 import 'package:timnhahang/features/restaurantsave/presentation/pages/restaurant_save_list.dart';
 

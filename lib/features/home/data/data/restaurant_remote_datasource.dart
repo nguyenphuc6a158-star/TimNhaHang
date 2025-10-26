@@ -3,6 +3,7 @@ import 'package:timnhahang/features/home/data/models/restaurant_model.dart';
 
 abstract class RestaurantRemoteDatasource {
   Future<List<RestaurantModel>> getAll();
+  Future<void> update(RestaurantModel note);
 }
 class RestaurantsRemoteDataSourceImpl implements RestaurantRemoteDatasource {
   final FirebaseRemoteDS<RestaurantModel> _remoteSource;
@@ -16,5 +17,9 @@ class RestaurantsRemoteDataSourceImpl implements RestaurantRemoteDatasource {
     List<RestaurantModel> restaurants = [];
     restaurants = await _remoteSource.getAll();
     return restaurants;
+  }
+  @override
+  Future<void> update(RestaurantModel restaurant) async {
+    await _remoteSource.update(restaurant.id.toString(), restaurant);
   }
 }

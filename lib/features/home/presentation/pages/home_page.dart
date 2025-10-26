@@ -3,6 +3,8 @@ import 'package:timnhahang/features/home/data/data/restaurant_remote_datasource.
 import 'package:timnhahang/features/home/data/repositories/restaurant_repository_impl.dart';
 import 'package:timnhahang/features/home/domain/entities/restaurant.dart';
 import 'package:timnhahang/features/home/domain/usecase/get_all_restaurant.dart';
+import 'package:timnhahang/features/home/domain/usecase/update_restaurant.dart';
+import 'package:timnhahang/features/home/presentation/pages/detail_restaurant.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -14,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   late final _repo = RestaurantRepositoryImpl(_remote);
 
   late final _getAllRestaurants = GetAllRestaurants(_repo);
-
+  late final _updateRestaurant = UpdateRestaurant(_repo);
   bool isLoading = true;
   List<Restaurant> listRestaurants = [];
 
@@ -30,10 +32,19 @@ class _HomePageState extends State<HomePage> {
       isLoading = false;
     });
   }
+  void  openDetailRestaurant(Restaurant restaurant) async {
+    Navigator.push(context, MaterialPageRoute(
+      builder: (context) => DetailRestaurantPage(restaurant: restaurant, updateRestaurant: _updateRestaurant),
+    ));
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Restaurants")),
+      appBar: AppBar(
+        title: const Text("Trang chủ"),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+      ),
       body: listRestaurants.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -44,7 +55,6 @@ class _HomePageState extends State<HomePage> {
             crossAxisCount: 2,        //Số cột trong lưới (2 cột)
             mainAxisSpacing: 8.0,     //Khoảng cách dọc giữa các item
             crossAxisSpacing: 8.0,    //Khoảng cách ngang giữa các item
-            // childAspectRatio: 3 / 4,  //Tỉ lệ chiều rộng / cao
           ),
           itemBuilder: (context, index) {
             final restaurant = listRestaurants[index];
@@ -52,11 +62,7 @@ class _HomePageState extends State<HomePage> {
               clipBehavior: Clip.antiAlias,
               child: InkWell(
                 onTap: () {
-                  print('Nhấn vào: ${restaurant.name}');
-                  // Ví dụ: chuyển sang trang chi tiết
-                  // Navigator.push(context, MaterialPageRoute(
-                  //   builder: (context) => RestaurantDetailPage(restaurant: restaurant),
-                  // ));
+                  openDetailRestaurant(restaurant);
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

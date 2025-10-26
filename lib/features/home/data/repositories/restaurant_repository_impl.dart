@@ -12,4 +12,8 @@ class RestaurantRepositoryImpl extends RestaurantRepository {
     List<RestaurantModel> restaurantModels = await remoteDataSource.getAll();
     return restaurantModels;
   }
+  @override
+  Future<void> updateNote(Restaurant restaurant) async {
+    await remoteDataSource.update(RestaurantModel.fromEntity(restaurant));
+  }
 }

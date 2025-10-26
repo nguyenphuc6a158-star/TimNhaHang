@@ -1,4 +1,5 @@
 class Restaurant {
+  final String id;
   final String address;
   final String category;
   final String closing;
@@ -11,6 +12,7 @@ class Restaurant {
 
   const Restaurant({
     required this.address,
+    required this.id,
     required this.category,
     required this.closing,
     required this.imageUrl,
@@ -22,7 +24,7 @@ class Restaurant {
   });
   @override
   String toString() {
-    return 'Note(address: $address,category: $category, closing: $closing, imageUrl: $imageUrl, '
+    return 'Note(id: $address, address: $address, category: $category, closing: $closing, imageUrl: $imageUrl, '
         'name: $name, opening: $opening, priceRange: $priceRange, rating: $rating, saved: $saved)';
   }
 }

@@ -1,14 +1,6 @@
 import 'package:flutter/material.dart';
 // Sử dụng Tiền tố 'fb' cho Firebase Auth
 import 'package:firebase_auth/firebase_auth.dart' as fb;
-import 'package:cloud_firestore/cloud_firestore.dart'; // Thêm: Dùng cho Firestore
-// Import Profile dependencies
-import 'package:timnhahang/features/profile/domain/usecase/get_user_profile.dart';
-import 'package:timnhahang/features/profile/domain/usecase/create_user_profile.dart';
-import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dart';
-import 'package:timnhahang/features/profile/data/repositories/user_repository_impl.dart';
-import 'package:timnhahang/features/profile/domain/entities/user.dart'; // Lớp User Entity của bạn
-// Các imports khác của bạn
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timnhahang/core/routing/app_routes.dart';
@@ -25,58 +17,6 @@ class _LoginPageState extends State<LoginPage> {
   String? error;
   bool _isLoggingIn = false;
 
-  // Khai báo Usecase
-  late final GetUserProfile getUserProfileUseCase;
-  late final CreateUserProfile createProfileUseCase;
-
-  @override
-  void initState() {
-    super.initState();
-    // Nối dây (DI) các Usecase cần thiết cho Profile
-    final firestore = FirebaseFirestore.instance;
-    final remoteDataSource = UserRemoteDataSourceImpl(firestore: firestore);
-    final repository = UserRepositoryImpl(remoteDataSource: remoteDataSource);
-
-    getUserProfileUseCase = GetUserProfile(repository);
-    createProfileUseCase = CreateUserProfile(repository);
-  }
-
-  // HÀM ĐÃ SỬA: Đảm bảo tài khoản có Profile trên Firestore
-  Future<void> _ensureProfileExists(
-    String uid,
-    String email,
-    String? photoUrl,
-  ) async {
-    try {
-      // 1. Thử tải Profile. Nếu thành công -> Tài khoản đã có Profile (Ok)
-      await getUserProfileUseCase.call(uid);
-    } catch (e) {
-      // 2. Nếu thất bại (Lỗi: 'User profile not found')
-      if (e.toString().contains('User profile not found')) {
-        // Đây là tài khoản Auth cũ chưa có Profile Firestore. -> TẠO NÓ NGAY LẬP TỨC.
-        // SỬ DỤNG LỚP User Entity của bạn
-        final User initialProfile = User(
-          uid: uid,
-          displayName: '',
-          email: email,
-          // Lấy photoURL từ Firebase Auth (nếu có) hoặc mặc định là rỗng
-          photoURL: photoUrl ?? '',
-          phoneNumber: '',
-          // Sử dụng Timestamp.now() để lưu thời điểm tạo profile
-          createdAt: Timestamp.now(),
-        );
-
-        // Gọi Usecase tạo Profile
-        await createProfileUseCase.call(initialProfile);
-
-        //print('Profile Firestore đã được tự động tạo cho tài khoản cũ: $uid');
-      } else {
-        // Ném lỗi khác nếu có vấn đề nghiêm trọng hơn
-        rethrow;
-      }
-    }
-  }
-
   // Hàm đăng nhập bằng Email/Pass (đã sửa)
   Future<void> _login() async {
     FocusScope.of(context).unfocus();
@@ -88,20 +28,13 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       // SỬ DỤNG TIỀN TỐ fb. cho FirebaseAuth
+      // ignore: unused_local_variable
       final fb.UserCredential userCredential = await fb.FirebaseAuth.instance
           .signInWithEmailAndPassword(
             email: emailCtrl.text.trim(),
             password: passCtrl.text,
           );
-
-      final uid = userCredential.user!.uid;
-      final email = userCredential.user!.email!;
-      final photoUrl = userCredential.user!.photoURL; // Lấy photoURL
-
-      // KIỂM TRA PROFILE FIRESTORE (QUAN TRỌNG CHO TÀI KHOẢN CŨ VÀ MỚI)
-      await _ensureProfileExists(uid, email, photoUrl); // Truyền photoUrl vào
-
-      // Đăng nhập thành công và profile đã tồn tại/được tạo.
+      // Đăng nhập thành công.
       if (mounted) {
         // Điều hướng đến trang chính
         context.go(AppRoutes.home); // Ví dụ: Điều hướng về trang Home
@@ -118,24 +51,18 @@ class _LoginPageState extends State<LoginPage> {
         setState(() => error = 'Đã xảy ra lỗi: ${e.message}');
       }
     } catch (e) {
-      setState(
-        () => error = 'Đã xảy ra lỗi. Vui lòng thử lại. Lỗi Profile: $e',
-      );
+      // (CẬP NHẬT) Lỗi chung
+      setState(() => error = 'Đã xảy ra lỗi không xác định. Vui lòng thử lại.');
     } finally {
       // Luôn dừng loading
       setState(() => _isLoggingIn = false);
     }
   }
 
-  // Hàm đăng nhập với Google (giữ nguyên, nhưng bạn nên thêm _ensureProfileExists sau khi đăng nhập Auth thành công)
+  // Hàm đăng nhập với Google
   Future<void> _signInWithGoogle() async {
     FocusScope.of(context).unfocus();
-    setState(() => error = null); // Xóa lỗi cũ nếu có
-
-    // Viết logic đăng nhập Google tại đây
-    // Sau khi đăng nhập Google thành công và lấy được UserCredential,
-    // bạn phải gọi _ensureProfileExists(user.uid, user.email!, user.photoURL) tương tự như trên.
-    //print("Đăng nhập Google (cần thêm logic _ensureProfileExists)");
+    setState(() => error = null);
   }
 
   @override

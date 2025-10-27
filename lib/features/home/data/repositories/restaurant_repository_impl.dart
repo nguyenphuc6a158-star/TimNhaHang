@@ -1,4 +1,3 @@
-
 import 'package:timnhahang/features/home/data/data/restaurant_remote_datasource.dart';
 import 'package:timnhahang/features/home/data/models/restaurant_model.dart';
 import 'package:timnhahang/features/home/domain/entities/restaurant.dart';
@@ -12,8 +11,15 @@ class RestaurantRepositoryImpl extends RestaurantRepository {
     List<RestaurantModel> restaurantModels = await remoteDataSource.getAll();
     return restaurantModels;
   }
+
   @override
   Future<void> updateNote(Restaurant restaurant) async {
     await remoteDataSource.update(RestaurantModel.fromEntity(restaurant));
+  }
+
+  @override
+  Future<List<Restaurant>> searchRestaurant(String text) async {
+    List<Restaurant> search = await remoteDataSource.search(text);
+    return search;
   }
 }

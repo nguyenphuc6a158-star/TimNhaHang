@@ -50,8 +50,36 @@ class FirebaseRemoteDS<T> {
 
   /// Listen to realtime changes in a collection
   Stream<List<T>> watchAll() {
-    return _collection.orderBy('created_at', descending: true).snapshots().map(
-          (snapshot) => snapshot.docs.map((e) => fromFirestore(e)).toList(),
-        );
+    return _collection
+        .orderBy('created_at', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((e) => fromFirestore(e)).toList());
+  }
+
+  Future<List<T>> searchByField({
+    required String field,
+    required String prefix,
+    int? limit,
+  }) async {
+    if (prefix.isEmpty) {
+      return [];
+    }
+    try {
+      Query query = _collection;
+
+      query = query
+          .where(field, isGreaterThanOrEqualTo: prefix)
+          .where(field, isLessThan: '$prefix\uf8ff')
+          .orderBy(field);
+      if (limit != null) {
+        query = query.limit(limit);
+      }
+
+      final snapshot = await query.get();
+      return snapshot.docs.map((e) => fromFirestore(e)).toList();
+    } catch (e) {
+      print("Lỗi khi tìm kiếm theo prefix trong Firestore: $e");
+      return [];
+    }
   }
 }

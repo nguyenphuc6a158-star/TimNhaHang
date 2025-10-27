@@ -29,7 +29,6 @@ class _LoginPageState extends State<LoginPage> {
   late final GetUserProfile getUserProfileUseCase;
   late final CreateUserProfile createProfileUseCase;
 
-
   @override
   void initState() {
     super.initState();
@@ -43,15 +42,17 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   // HÀM ĐÃ SỬA: Đảm bảo tài khoản có Profile trên Firestore
-  Future<void> _ensureProfileExists(String uid, String email, String? photoUrl) async {
+  Future<void> _ensureProfileExists(
+    String uid,
+    String email,
+    String? photoUrl,
+  ) async {
     try {
       // 1. Thử tải Profile. Nếu thành công -> Tài khoản đã có Profile (Ok)
       await getUserProfileUseCase.call(uid);
-
     } catch (e) {
       // 2. Nếu thất bại (Lỗi: 'User profile not found')
       if (e.toString().contains('User profile not found')) {
-
         // Đây là tài khoản Auth cũ chưa có Profile Firestore. -> TẠO NÓ NGAY LẬP TỨC.
         // SỬ DỤNG LỚP User Entity của bạn
         final User initialProfile = User(
@@ -68,15 +69,13 @@ class _LoginPageState extends State<LoginPage> {
         // Gọi Usecase tạo Profile
         await createProfileUseCase.call(initialProfile);
 
-        print('Profile Firestore đã được tự động tạo cho tài khoản cũ: $uid');
-
+        //print('Profile Firestore đã được tự động tạo cho tài khoản cũ: $uid');
       } else {
         // Ném lỗi khác nếu có vấn đề nghiêm trọng hơn
         rethrow;
       }
     }
   }
-
 
   // Hàm đăng nhập bằng Email/Pass (đã sửa)
   Future<void> _login() async {
@@ -89,10 +88,11 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       // SỬ DỤNG TIỀN TỐ fb. cho FirebaseAuth
-      final fb.UserCredential userCredential = await fb.FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailCtrl.text.trim(),
-        password: passCtrl.text,
-      );
+      final fb.UserCredential userCredential = await fb.FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+            email: emailCtrl.text.trim(),
+            password: passCtrl.text,
+          );
 
       final uid = userCredential.user!.uid;
       final email = userCredential.user!.email!;
@@ -106,7 +106,8 @@ class _LoginPageState extends State<LoginPage> {
         // Điều hướng đến trang chính
         context.go(AppRoutes.home); // Ví dụ: Điều hướng về trang Home
       }
-    } on fb.FirebaseAuthException catch (e) { // SỬ DỤNG TIỀN TỐ fb.
+    } on fb.FirebaseAuthException catch (e) {
+      // SỬ DỤNG TIỀN TỐ fb.
       if (e.code == 'user-not-found') {
         setState(() => error = 'Không tìm thấy người dùng với email này.');
       } else if (e.code == 'wrong-password') {
@@ -117,7 +118,9 @@ class _LoginPageState extends State<LoginPage> {
         setState(() => error = 'Đã xảy ra lỗi: ${e.message}');
       }
     } catch (e) {
-      setState(() => error = 'Đã xảy ra lỗi. Vui lòng thử lại. Lỗi Profile: $e');
+      setState(
+        () => error = 'Đã xảy ra lỗi. Vui lòng thử lại. Lỗi Profile: $e',
+      );
     } finally {
       // Luôn dừng loading
       setState(() => _isLoggingIn = false);
@@ -129,10 +132,10 @@ class _LoginPageState extends State<LoginPage> {
     FocusScope.of(context).unfocus();
     setState(() => error = null); // Xóa lỗi cũ nếu có
 
-    // TODO: Viết logic đăng nhập Google tại đây
+    // Viết logic đăng nhập Google tại đây
     // Sau khi đăng nhập Google thành công và lấy được UserCredential,
     // bạn phải gọi _ensureProfileExists(user.uid, user.email!, user.photoURL) tương tự như trên.
-    print("Đăng nhập Google (cần thêm logic _ensureProfileExists)");
+    //print("Đăng nhập Google (cần thêm logic _ensureProfileExists)");
   }
 
   @override
@@ -185,9 +188,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           // Lớp 2: Lớp phủ mờ tối
           Positioned.fill(
-            child: Container(
-              color: Colors.black.withOpacity(0.45),
-            ),
+            child: Container(color: Colors.black.withValues(alpha: 0.45)),
           ),
           // Lớp 3: Nội dung trang
           SafeArea(
@@ -222,9 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             label: const Text("Đăng nhập với Gmail"),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(
-                                0xFFE53935,
-                              ),
+                              backgroundColor: const Color(0xFFE53935),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
@@ -256,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: Colors.red.withOpacity(0.2),
+                                  color: Colors.red.withValues(alpha: 0.5),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
@@ -277,14 +276,14 @@ class _LoginPageState extends State<LoginPage> {
                             decoration: InputDecoration(
                               hintText: "Địa chỉ Email của bạn",
                               hintStyle: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                               prefixIcon: Icon(
                                 Icons.email_outlined,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide.none,
@@ -302,14 +301,14 @@ class _LoginPageState extends State<LoginPage> {
                             decoration: InputDecoration(
                               hintText: "Mật khẩu của bạn",
                               hintStyle: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                               prefixIcon: Icon(
                                 Icons.lock_outline,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide.none,
@@ -335,10 +334,13 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             child: _isLoggingIn
                                 ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
-                            )
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 3,
+                                    ),
+                                  )
                                 : const Text("Đăng nhập"),
                           ),
                           const SizedBox(height: 16),
@@ -360,8 +362,8 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  // TODO: Chuyển đến trang Quên mật khẩu
-                                  print("Chuyển đến trang Quên mật khẩu");
+                                  // Chuyển đến trang Quên mật khẩu
+                                  //print("Chuyển đến trang Quên mật khẩu");
                                 },
                                 child: const Text(
                                   "Quên mật khẩu?",
@@ -383,7 +385,8 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: Text.rich(
                       TextSpan(
-                        text: "Bằng cách đăng nhập hoặc đăng ký, bạn đồng ý với ",
+                        text:
+                            "Bằng cách đăng nhập hoặc đăng ký, bạn đồng ý với ",
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 12,

@@ -1,13 +1,6 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
-// Xóa import Firebase Storage và Image Picker
-// import 'package:firebase_storage/firebase_storage.dart';
-// import 'package:image_picker/image_picker.dart';
-import 'package:go_router/go_router.dart';
 
 // Import Profile dependencies
 import 'package:timnhahang/features/profile/domain/usecase/get_user_profile.dart';
@@ -33,7 +26,8 @@ class _ProfilePageState extends State<ProfilePage> {
   // Controllers
   final _displayNameController = TextEditingController();
   final _phoneNumberController = TextEditingController();
-  final _avatarUrlController = TextEditingController(); // Controller mới cho URL Avatar
+  final _avatarUrlController =
+      TextEditingController(); // Controller mới cho URL Avatar
 
   // Usecase (Giả định khởi tạo đơn giản)
   late final GetUserProfile _getUserProfile;
@@ -91,7 +85,8 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       setState(() {
         // Lỗi này thường xảy ra nếu Profile chưa có trên Firestore
-        _errorMessage = 'Lỗi tải: Tài khoản chưa có dữ liệu Profile. Vui lòng cập nhật.';
+        _errorMessage =
+            'Lỗi tải: Tài khoản chưa có dữ liệu Profile. Vui lòng cập nhật.';
         _isLoading = false;
       });
     }
@@ -148,7 +143,8 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final newDisplayName = _displayNameController.text.trim();
       final newPhoneNumber = _phoneNumberController.text.trim();
-      final newPhotoURL = _avatarUrlController.text.trim(); // Lấy URL từ controller
+      final newPhotoURL = _avatarUrlController.text
+          .trim(); // Lấy URL từ controller
 
       // 1. Cập nhật Profile Entity trên Firestore (Sử dụng copyWith)
       final updatedProfile = _currentUserProfile!.copyWith(
@@ -159,8 +155,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
       // 2. Đồng bộ Tên hiển thị VÀ Photo URL với Auth User
       await _auth.currentUser!.updateDisplayName(newDisplayName);
-      await _auth.currentUser!.updatePhotoURL(newPhotoURL.isEmpty ? null : newPhotoURL);
-
+      await _auth.currentUser!.updatePhotoURL(
+        newPhotoURL.isEmpty ? null : newPhotoURL,
+      );
 
       await _updateUserProfile.call(updatedProfile);
 
@@ -171,7 +168,6 @@ class _ProfilePageState extends State<ProfilePage> {
           const SnackBar(content: Text('Lưu Thay Đổi Profile thành công!')),
         );
       });
-
     } on fb.FirebaseException catch (e) {
       setState(() {
         _errorMessage = 'Lỗi Firebase: ${e.message}';
@@ -223,8 +219,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       photoURL: _auth.currentUser!.photoURL,
                       displayName: _auth.currentUser!.displayName,
                     );
-                    _displayNameController.text = _currentUserProfile!.displayName ?? '';
-                    _avatarUrlController.text = _currentUserProfile!.photoURL ?? '';
+                    _displayNameController.text =
+                        _currentUserProfile!.displayName ?? '';
+                    _avatarUrlController.text =
+                        _currentUserProfile!.photoURL ?? '';
 
                     _isLoading = false; // Tắt loading
                     _errorMessage = null; // Xóa lỗi
@@ -266,11 +264,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ? NetworkImage(photoUrl)
                         : null,
                     child: (photoUrl == null || photoUrl.isEmpty)
-                        ? Icon(
-                      Icons.person,
-                      size: 60,
-                      color: Colors.grey[600],
-                    )
+                        ? Icon(Icons.person, size: 60, color: Colors.grey[600])
                         : null,
                   ),
                   // NÚT MỞ HỘP THOẠI NHẬP URL
@@ -349,10 +343,10 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: _isSaving ? null : _saveProfile,
               icon: _isSaving
                   ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : const Icon(Icons.save),
               label: Text(_isSaving ? "Đang lưu..." : "Lưu Thay Đổi Profile"),
               style: ElevatedButton.styleFrom(
@@ -408,7 +402,7 @@ class _ProfilePageState extends State<ProfilePage> {
             // Nút Đổi Mật khẩu
             ElevatedButton(
               onPressed: () {
-                // TODO: Triển khai logic đổi mật khẩu sử dụng Firebase Auth
+                // Triển khai logic đổi mật khẩu sử dụng Firebase Auth
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,

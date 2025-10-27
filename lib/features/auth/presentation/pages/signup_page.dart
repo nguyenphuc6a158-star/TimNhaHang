@@ -88,7 +88,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
           // Lớp 2: Lớp phủ mờ tối
           Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.45)),
+            child: Container(color: Colors.black.withValues(alpha: 0.45)),
           ),
           // Lớp 3: Nội dung trang
           SafeArea(
@@ -122,7 +122,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               child: Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: Colors.red.withOpacity(0.2),
+                                  color: Colors.red.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
@@ -143,14 +143,14 @@ class _SignUpPageState extends State<SignUpPage> {
                             decoration: InputDecoration(
                               hintText: "Địa chỉ Email của bạn",
                               hintStyle: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                               prefixIcon: Icon(
                                 Icons.email_outlined,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide.none,
@@ -168,14 +168,14 @@ class _SignUpPageState extends State<SignUpPage> {
                             decoration: InputDecoration(
                               hintText: "Mật khẩu",
                               hintStyle: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                               prefixIcon: Icon(
                                 Icons.lock_outline,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide.none,
@@ -192,14 +192,14 @@ class _SignUpPageState extends State<SignUpPage> {
                             decoration: InputDecoration(
                               hintText: "Xác nhận mật khẩu",
                               hintStyle: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                               prefixIcon: Icon(
                                 Icons.lock_outline,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.2),
+                              fillColor: Colors.white.withValues(alpha: 0.2),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide.none,

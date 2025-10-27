@@ -7,6 +7,6 @@ class UserEntity extends Equatable {
   const UserEntity({required this.uid, this.email});
 
   @override
-  // TODO: implement props
+  // implement props
   List<Object?> get props => [uid, email];
 }

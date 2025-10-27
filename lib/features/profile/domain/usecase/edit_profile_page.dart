@@ -7,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dart';
 import 'package:timnhahang/features/profile/data/repositories/user_repository_impl.dart';
 
-
 class EditProfilePage extends StatefulWidget {
   final User initialUser;
 
@@ -32,8 +31,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    nameController = TextEditingController(text: widget.initialUser.displayName);
-    phoneController = TextEditingController(text: widget.initialUser.phoneNumber);
+    nameController = TextEditingController(
+      text: widget.initialUser.displayName,
+    );
+    phoneController = TextEditingController(
+      text: widget.initialUser.phoneNumber,
+    );
     currentPasswordController = TextEditingController();
     newPasswordController = TextEditingController();
 
@@ -93,7 +96,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> _changePassword() async {
     if (_isPasswordSaving) return;
 
-    if (newPasswordController.text.isEmpty || newPasswordController.text.length < 6) {
+    if (newPasswordController.text.isEmpty ||
+        newPasswordController.text.length < 6) {
       setState(() => _error = "Mật khẩu mới phải có ít nhất 6 ký tự.");
       return;
     }
@@ -151,9 +155,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Chỉnh sửa Profile"),
-      ),
+      appBar: AppBar(title: const Text("Chỉnh sửa Profile")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -164,14 +166,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text('Lỗi: $_error', style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  'Lỗi: $_error',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
 
             // --- PHẦN 1: THÔNG TIN CÁ NHÂN (NAME, PHONE) ---
-            const Text("Thông tin cá nhân", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              "Thông tin cá nhân",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const Divider(),
 
             // Trường Tên Hiển thị
@@ -198,9 +206,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
             // Nút Lưu Profile
             ElevatedButton.icon(
               onPressed: _updateProfile,
-              icon: _isSaving ? const SizedBox(
-                  width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)
-              ) : const Icon(Icons.save),
+              icon: _isSaving
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.save),
               label: Text(_isSaving ? "Đang lưu..." : "Lưu Thay Đổi Profile"),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
@@ -210,7 +225,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
             const SizedBox(height: 40),
 
             // --- PHẦN 2: THAY ĐỔI MẬT KHẨU (AUTH) ---
-            const Text("Thay đổi Mật khẩu (Auth)", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              "Thay đổi Mật khẩu (Auth)",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const Divider(),
 
             // Trường Mật khẩu hiện tại (Bắt buộc để xác thực lại)
@@ -238,9 +256,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
             // Nút Đổi Mật khẩu
             ElevatedButton.icon(
               onPressed: _changePassword,
-              icon: _isPasswordSaving ? const SizedBox(
-                  width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)
-              ) : const Icon(Icons.vpn_key_outlined),
+              icon: _isPasswordSaving
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.vpn_key_outlined),
               label: Text(_isPasswordSaving ? "Đang đổi..." : "Đổi Mật Khẩu"),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),

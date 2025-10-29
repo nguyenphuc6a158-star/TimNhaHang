@@ -187,8 +187,7 @@ class DetailRestaurantPage extends StatelessWidget {
           onPressed: () {
             // Xử lý logic Đặt giao hàng tại đây
           },
-          icon: const Icon(Icons.delivery_dining),
-          label: const Text('Đặt giao hàng'),
+          label: const Text('Đặt bàn'),
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryColor,
             foregroundColor: Colors.white,

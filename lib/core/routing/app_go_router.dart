@@ -10,6 +10,7 @@ import 'package:timnhahang/features/auth/presentation/pages/signup_page.dart';
 import 'package:timnhahang/features/history/presentation/page/history_page.dart';
 import 'package:timnhahang/features/home/presentation/pages/home_page.dart';
 import 'package:timnhahang/features/profile/presentation/pages/profile_page.dart';
+import 'package:timnhahang/features/profile/presentation/pages/setting_pages.dart';
 import 'package:timnhahang/features/restaurantsave/presentation/pages/restaurant_save_list.dart';
 
 class AppGoRouter {
@@ -27,9 +28,36 @@ class AppGoRouter {
       ),
       ShellRoute(
         builder: (context, state, child) {
+          // --- (CẬP NHẬT) Lấy UID và Vị trí hiện tại ---
+          final user = FirebaseAuth.instance.currentUser;
+          if (user == null) {
+            // Trường hợp này không nên xảy ra nếu redirect hoạt động
+            return const Scaffold(body: Center(child: Text("Lỗi xác thực.")));
+          }
+
+          final String uid = user.uid;
+          final String location = state.matchedLocation;
+
+          // Tính toán index hiện tại dựa trên route
+          int currentIndex = 0;
+          if (location == AppRoutes.home) {
+            currentIndex = 0;
+          } else if (location == AppRoutes.saved) {
+            currentIndex = 1;
+          } else if (location == AppRoutes.history) {
+            currentIndex = 2;
+          } else if (location.startsWith(AppRoutes.profile)) {
+            // Dùng startsWith vì route profile bây giờ có /:uid
+            currentIndex = 3;
+          }
+
           return Scaffold(
             body: child,
-            bottomNavigationBar: CustomerBottomNav(initialIndex: 0),
+            // (CẬP NHẬT) Truyền uid và currentIndex vào bottom nav
+            bottomNavigationBar: CustomerBottomNav(
+              initialIndex: currentIndex,
+              uid: uid,
+            ),
           );
         },
         routes: [
@@ -46,12 +74,21 @@ class AppGoRouter {
             builder: (context, state) => const HistoryPage(),
           ),
           GoRoute(
-            path: AppRoutes.profile,
-            builder: (context, state) => const ProfilePage(),
+            path: '${AppRoutes.profile}/:uid',
+            builder: (context, state) {
+              final uid = state.pathParameters['uid']!;
+              return ProfilePage(uid: uid);
+            },
           ),
+          /*GoRoute(
+            path: '${AppRoutes.setting}/:uid',
+            builder: (context, state) {
+              final uid = state.pathParameters['uid']!;
+              return SettingPage(uid: uid);
+            },
+          ),*/
         ],
       ),
-
     ],
     redirect: (context, state) {
       final user = FirebaseAuth.instance.currentUser;
@@ -59,9 +96,14 @@ class AppGoRouter {
       final loggingIn =
           state.matchedLocation == AppRoutes.login ||
           state.matchedLocation == AppRoutes.signup;
+
       if (!loggedIn && !loggingIn) return AppRoutes.login;
 
       if (loggedIn && loggingIn) return AppRoutes.home;
+      if (loggedIn && state.matchedLocation == AppRoutes.profile) {
+        return '${AppRoutes.profile}/${user.uid}';
+      }
+
       return null;
     },
     refreshListenable: GoRouterRefreshStream(

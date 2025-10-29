@@ -7,7 +7,7 @@ class User {
   final String email;
   final String? photoURL;
   final String? phoneNumber;
-  final Timestamp createdAt;
+  final Timestamp? createdAt;
   // Bạn có thể thêm các trường khác nếu cần
 
   const User({
@@ -16,7 +16,7 @@ class User {
     required this.email,
     this.photoURL,
     this.phoneNumber,
-    required this.createdAt,
+    this.createdAt,
   });
 
   @override

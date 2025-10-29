@@ -46,7 +46,7 @@ class AppGoRouter {
             currentIndex = 1;
           } else if (location == AppRoutes.history) {
             currentIndex = 2;
-          } else if (location.startsWith(AppRoutes.profile)) {
+          } else if (location.startsWith(AppRoutes.setting)) {
             // Dùng startsWith vì route profile bây giờ có /:uid
             currentIndex = 3;
           }

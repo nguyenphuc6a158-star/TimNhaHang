@@ -38,6 +38,10 @@ class FirebaseRemoteDS<T> {
     return docRef.id;
   }
 
+  Future<void> set(String id, T item) async {
+    await _collection.doc(id).set(toFirestore(item));
+  }
+
   /// Update an existing document
   Future<void> update(String id, T item) async {
     await _collection.doc(id).update(toFirestore(item));

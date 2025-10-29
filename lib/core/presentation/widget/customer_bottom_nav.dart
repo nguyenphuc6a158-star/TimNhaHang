@@ -23,7 +23,7 @@ class _CustomerBottomNavState extends State<CustomerBottomNav> {
     Icons.home,
     Icons.save,
     Icons.history,
-    Icons.account_circle,
+    Icons.settings,
   ];
 
   @override
@@ -76,7 +76,7 @@ class _CustomerBottomNavState extends State<CustomerBottomNav> {
       case 3:
         // (CẬP NHẬT) Truyền uid vào route
         // Giả sử route profile của bạn là '/profile/:uid'
-        context.go('${AppRoutes.profile}/${widget.uid}');
+        context.go('${AppRoutes.setting}/${widget.uid}');
         break;
     }
   }

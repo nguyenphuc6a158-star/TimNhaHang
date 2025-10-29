@@ -8,6 +8,6 @@ class CreateUserProfile {
 
   // Hàm này nhận một User Entity cơ bản và tạo tài liệu trên Firestore
   Future<void> call(User user) {
-    return repository.createProfile(user);
+    return repository.createUser(user);
   }
 }

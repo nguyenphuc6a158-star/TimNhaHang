@@ -31,9 +31,8 @@ class _SignUpPageState extends State<SignUpPage> {
   void initState() {
     super.initState();
     // Nối dây (DI) các Usecase cần thiết cho Profile (Giống LoginPage)
-    final firestore = FirebaseFirestore.instance;
-    final remoteDataSource = UserRemoteDataSourceImpl(firestore: firestore);
-    final repository = UserRepositoryImpl(remoteDataSource: remoteDataSource);
+    final remoteDataSource = UsersRemoteDataSourceImpl();
+    final repository = UserRepositoryImpl(remoteDataSource);
 
     createProfileUseCase = CreateUserProfile(repository);
   }

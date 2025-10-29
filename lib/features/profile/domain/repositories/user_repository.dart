@@ -1,12 +1,9 @@
+
 import 'package:timnhahang/features/profile/domain/entities/user.dart';
 
-// Abstract class, định nghĩa những gì có thể làm với dữ liệu User
 abstract class UserRepository {
-  // Lấy profile theo UID
-  Future<User> getUserProfile(String uid);
-
-  // Cập nhật profile
-  Future<void> updateProfile(User user);
-  // THÊM: Phương thức tạo profile
-  Future<void> createProfile(User user);
+  Future<User> getUser(String uid);
+  Future<void> updateUser(User user);
+  Future<void> deleteUser(String uid);
+  Future<void> createUser(User user);
 }

@@ -19,22 +19,8 @@ class User {
     required this.createdAt,
   });
 
-  // PHƯƠNG THỨC copyWith được yêu cầu
-  User copyWith({
-    String? uid,
-    String? displayName,
-    String? email,
-    String? photoURL,
-    String? phoneNumber,
-    Timestamp? createdAt,
-  }) {
-    return User(
-      uid: uid ?? this.uid,
-      displayName: displayName ?? this.displayName,
-      email: email ?? this.email,
-      photoURL: photoURL ?? this.photoURL,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
-      createdAt: createdAt ?? this.createdAt,
-    );
+  @override
+  String toString() {
+    return 'Note(uid: $uid, displayName: $displayName, email: $email, photoURL: $photoURL, phoneNumber: $phoneNumber, name: $createdAt)';
   }
 }

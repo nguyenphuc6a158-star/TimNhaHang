@@ -1,37 +1,39 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:timnhahang/core/data/firebase_remote_datasource.dart';
 import 'package:timnhahang/features/profile/data/models/user_model.dart';
 
-// Abstract class định nghĩa các hàm lấy dữ liệu từ nguồn (Firestore)
-abstract class UserRemoteDataSource {
-  Future<UserModel> getUserProfile(String uid);
-  Future<void> updateProfile(UserModel user);
-  // THÊM: Phương thức tạo profile
-  Future<void> createProfile(UserModel user);
+abstract class UsersRemoteDatasource {
+  Future<UserModel?> getUser(String uid);
+  Future<void> update(UserModel user);
+  Future<void> delete(String uid);
+  Future<void> add(UserModel user);
 }
 
-// Triển khai thực tế để tương tác với Firestore
-class UserRemoteDataSourceImpl implements UserRemoteDataSource {
-  final FirebaseFirestore firestore;
-
-  UserRemoteDataSourceImpl({required this.firestore});
+class UsersRemoteDataSourceImpl implements UsersRemoteDatasource {
+  final FirebaseRemoteDS<UserModel> _remoteSource;
+  UsersRemoteDataSourceImpl() : _remoteSource = FirebaseRemoteDS<UserModel>(
+    collectionName: 'users',
+    fromFirestore: (doc) => UserModel.fromFirestore(doc),
+    toFirestore: (model) => model.toJson(),
+  );
 
   @override
-  Future<UserModel> getUserProfile(String uid) async {
-    final docSnapshot = await firestore.collection('users').doc(uid).get();
-
-    if (docSnapshot.exists) {
-      return UserModel.fromFirestore(docSnapshot);
-    } else {
-      throw Exception('User profile not found for UID: $uid');
-    }
+  Future<void> add(UserModel user) async {
+    await _remoteSource.add(user);
   }
+
   @override
-  Future<void> createProfile(UserModel user) async {
-    // Dùng .set() để đảm bảo tài liệu được tạo nếu chưa có
-    await firestore.collection('users').doc(user.uid).set(user.toMap());
+  Future<UserModel?> getUser(String uid) async {
+    UserModel? user = await _remoteSource.getById(uid);
+    return user;
   }
+
   @override
-  Future<void> updateProfile(UserModel user) async {
-    await firestore.collection('users').doc(user.uid).update(user.toMap());
+  Future<void> update(UserModel user) async {
+    await _remoteSource.update(user.uid.toString(), user);
+  }
+
+  @override
+  Future<void> delete(String uid) async {
+    await _remoteSource.delete(uid);
   }
 }

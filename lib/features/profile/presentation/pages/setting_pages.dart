@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
-
-import 'package:timnhahang/features/profile/domain/usecase/get_user_profile.dart';
 import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dart';
 import 'package:timnhahang/features/profile/data/repositories/user_repository_impl.dart';
+
+import 'package:timnhahang/features/profile/domain/usecase/get_user_profile.dart';
+// import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dart';
+// import 'package:timnhahang/features/profile/data/repositories/user_repository_impl.dart';
 import 'package:timnhahang/features/profile/domain/entities/user.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timnhahang/core/routing/app_routes.dart';
@@ -44,9 +46,8 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   void _initializeDependencies() {
-    final firestore = FirebaseFirestore.instance;
-    final remoteDataSource = UserRemoteDataSourceImpl(firestore: firestore);
-    final repository = UserRepositoryImpl(remoteDataSource: remoteDataSource);
+    final remoteDataSource = UsersRemoteDataSourceImpl();
+    final repository = UserRepositoryImpl(remoteDataSource);
 
     _getUserProfile = GetUserProfile(repository);
   }
@@ -54,7 +55,7 @@ class _SettingPageState extends State<SettingPage> {
   Future<void> _fetchUserProfile() async {
     final uid = widget.uid;
     try {
-      final profile = await _getUserProfile.call(uid);
+      final profile = await _getUserProfile(uid);
       if (!mounted) return;
       setState(() {
         _currentUserProfile = profile;
@@ -63,8 +64,7 @@ class _SettingPageState extends State<SettingPage> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage =
-            'Lỗi tải thông tin tài khoản: ${e.toString()}';
+        _errorMessage ='Lỗi tải thông tin tài khoản: ${e.toString()}';
         _isLoading = false;
       });
     }
@@ -128,7 +128,7 @@ class _SettingPageState extends State<SettingPage> {
   // (CẬP NHẬT) Widget build phần body menu
   Widget _buildMenuBody() {
     final photoUrl = _currentUserProfile?.photoURL;
-    final displayName = _currentUserProfile?.displayName ?? "John Stone";
+    final displayName = _currentUserProfile?.displayName ?? "";
 
     return Container(
       color: Colors.grey[200], // Màu nền xám nhạt cho toàn bộ body

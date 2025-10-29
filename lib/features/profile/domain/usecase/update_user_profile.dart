@@ -8,6 +8,6 @@ class UpdateUserProfile {
 
   // Hàm này nhận User Entity đã được chỉnh sửa và gửi xuống Repository
   Future<void> call(User user) {
-    return repository.updateProfile(user);
+    return repository.updateUser(user);
   }
 }

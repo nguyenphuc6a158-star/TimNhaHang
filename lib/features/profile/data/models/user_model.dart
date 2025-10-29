@@ -9,10 +9,9 @@ class UserModel extends User {
     required super.email,
     required super.photoURL,
     required super.phoneNumber,
-    required super.createdAt,
+    required super.createdAt, 
   });
 
-  // Chuyển đổi từ DocumentSnapshot của Firestore sang UserModel
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return UserModel(
@@ -25,15 +24,20 @@ class UserModel extends User {
     );
   }
 
-  // Chuyển đổi từ UserModel sang Map để ghi lên Firestore
-  Map<String, dynamic> toMap() {
-    return {
-      'uid': uid,
-      'displayName': displayName,
-      'email': email,
-      'photoURL': photoURL,
-      'phoneNumber': phoneNumber,
-      'createdAt': createdAt,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'uid': uid,
+    'displayName': displayName,
+    'email': email,
+    'photoURL': photoURL,
+    'phoneNumber': phoneNumber,
+    'createdAt': createdAt,
+  };
+  factory UserModel.fromEntity(User e) => UserModel(
+    uid: e.uid,
+    displayName: e.displayName,
+    email: e.email,
+    photoURL: e.photoURL,
+    phoneNumber: e.phoneNumber,
+    createdAt: e.createdAt,
+  );  
 }

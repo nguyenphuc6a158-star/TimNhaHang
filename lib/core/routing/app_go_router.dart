@@ -10,6 +10,7 @@ import 'package:timnhahang/features/auth/presentation/pages/signup_page.dart';
 import 'package:timnhahang/features/history/presentation/page/history_page.dart';
 import 'package:timnhahang/features/home/presentation/pages/home_page.dart';
 import 'package:timnhahang/features/profile/presentation/pages/profile_page.dart';
+import 'package:timnhahang/features/profile/presentation/pages/setting_pages.dart';
 import 'package:timnhahang/features/restaurantsave/presentation/pages/restaurant_save_list.dart';
 
 class AppGoRouter {
@@ -79,13 +80,13 @@ class AppGoRouter {
               return ProfilePage(uid: uid);
             },
           ),
-          /*GoRoute(
+          GoRoute(
             path: '${AppRoutes.setting}/:uid',
             builder: (context, state) {
               final uid = state.pathParameters['uid']!;
               return SettingPage(uid: uid);
             },
-          ),*/
+          ),
         ],
       ),
     ],

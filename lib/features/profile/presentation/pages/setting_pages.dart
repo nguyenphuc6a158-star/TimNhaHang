@@ -69,25 +69,6 @@ class _SettingPageState extends State<SettingPage> {
       });
     }
   }
-
-  // (MỚI) Hàm xử lý đăng xuất
-  Future<void> _handleSignOut() async {
-    try {
-      await _auth.signOut();
-      // Sau khi đăng xuất, điều hướng về màn hình đăng nhập
-      if (!mounted) return;
-      Navigator.of(context).pushAndRemoveUntil(
-        // TODO: Thay thế Text() bằng trang Login thật của bạn
-        MaterialPageRoute(builder: (context) => const Text("Login Screen")), 
-        (route) => false,
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi đăng xuất: ${e.toString()}')),
-      );
-    }
-  }
   
   // (MỚI) Hàm điều hướng đến trang "Hoạt động"
   void _navigateToActivity() {
@@ -238,7 +219,7 @@ class _SettingPageState extends State<SettingPage> {
             children: [
               _buildMenuOption(Icons.policy, 'Chính sách', Colors.grey.shade700),
               _buildMenuOption(Icons.settings, 'Cài đặt', Colors.grey.shade700),
-              _buildMenuOption(Icons.logout, 'Đăng xuất', Colors.grey.shade700, hasDivider: false, onTap: _handleSignOut),
+              _buildMenuOption(Icons.logout, 'Đăng xuất', Colors.grey.shade700, hasDivider: false, onTap: () => _auth.signOut()),
             ],
           ),
           const SizedBox(height: 20),

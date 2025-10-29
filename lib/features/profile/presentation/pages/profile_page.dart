@@ -142,14 +142,19 @@ class _ProfilePageState extends State<ProfilePage> {
       final newPhoneNumber = _phoneNumberController.text.trim();
       final newPhotoURL = _avatarUrlController.text.trim();
 
+      // --- (SỬA LỖI) ---
+      // Lấy profile hiện tại làm cơ sở để không làm mất
+      // các giá trị `email` và `createdAt` đã có.
       final updatedProfile = User(
+        uid: _currentUserProfile!.uid,
+        email: _currentUserProfile!.email, // <-- Giữ lại email cũ
+        createdAt: _currentUserProfile!.createdAt, // <-- Giữ lại ngày tạo cũ
+        // --- Chỉ cập nhật các giá trị mới ---
         displayName: newDisplayName,
         phoneNumber: newPhoneNumber,
         photoURL: newPhotoURL.isEmpty ? null : newPhotoURL,
-        uid: '',
-        email: '',
-        createdAt: null,
       );
+      // --- (KẾT THÚC SỬA LỖI) ---
 
       final currentUserAuth = _auth.currentUser;
       if (currentUserAuth != null && currentUserAuth.uid == widget.uid) {
@@ -160,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
       }
 
       // (GIỮ NGUYÊN) Sử dụng _updateUserProfile (đã khởi tạo trong initState)
-      await _updateUserProfile.call(updatedProfile);
+      await _updateUserProfile(updatedProfile);
 
       if (!mounted) return;
       setState(() {

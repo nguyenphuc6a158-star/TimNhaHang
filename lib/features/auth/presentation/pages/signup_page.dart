@@ -75,21 +75,19 @@ class _SignUpPageState extends State<SignUpPage> {
         final User initialProfile = User(
           uid: uid,
           email: email,
-          displayName: '', // Mặc định là rỗng
+          displayName: email, // Mặc định là rỗng
           photoURL: photoUrl ?? '', // Mặc định là rỗng
           phoneNumber: '', // Mặc định là rỗng
           createdAt: Timestamp.now(), // Thời điểm tạo
         );
 
         // Gọi Usecase để lưu vào Firestore
-        await createProfileUseCase.call(initialProfile);
+        await createProfileUseCase(initialProfile);
       }
       // --- KẾT THÚC PHẦN MỚI ---
 
       // Đăng ký thành công, chuyển đến trang chủ (thay vì pop)
       if (mounted) {
-        // Thay vì pop(), chúng ta điều hướng đến Home
-        // Người dùng đã đăng ký và đăng nhập
         context.go(AppRoutes.home);
       }
     } on fb.FirebaseAuthException catch (e) {

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dart';
 import 'package:timnhahang/features/profile/data/repositories/user_repository_impl.dart';
 
 import 'package:timnhahang/features/profile/domain/usecase/get_user_profile.dart';
-// import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dart';
-// import 'package:timnhahang/features/profile/data/repositories/user_repository_impl.dart';
 import 'package:timnhahang/features/profile/domain/entities/user.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timnhahang/core/routing/app_routes.dart';
@@ -16,11 +13,9 @@ class SettingPage extends StatefulWidget {
   const SettingPage({super.key, required this.uid});
 
   @override
-  // ĐỔI TÊN: _ProfilePageState -> _SettingPageState
   State<SettingPage> createState() => _SettingPageState();
 }
 
-// ĐỔI TÊN: _ProfilePageState -> _SettingPageState
 class _SettingPageState extends State<SettingPage> {
   // Biến state
   User? _currentUserProfile;
@@ -64,20 +59,18 @@ class _SettingPageState extends State<SettingPage> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage ='Lỗi tải thông tin tài khoản: ${e.toString()}';
+        _errorMessage = 'Lỗi tải thông tin tài khoản: ${e.toString()}';
         _isLoading = false;
       });
     }
   }
-  
+
   // (MỚI) Hàm điều hướng đến trang "Hoạt động"
   void _navigateToActivity() {
-    // TODO: Thay thế bằng logic điều hướng thật
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Điều hướng đến trang Hoạt động...')),
     );
   }
-
 
   // (CẬP NHẬT) Hàm build UI chính
   @override
@@ -104,24 +97,12 @@ class _SettingPageState extends State<SettingPage> {
             ),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.white),
-            onPressed: () {
-              // TODO: Xử lý tìm kiếm
-            },
-          ),
-        ],
       ),
 
       // === 2. Body ===
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _buildMenuBody(),
-
-      // === 3. (ĐÃ XÓA) Bottom Navigation Bar ===
-      // Toàn bộ phần bottomNavigationBar đã được xóa khỏi đây.
-
     );
   }
 
@@ -143,13 +124,16 @@ class _SettingPageState extends State<SettingPage> {
                 // (MỚI) Nút 1: Bấm vào Avatar/Tên
                 Expanded(
                   child: InkWell(
-                    onTap: () => context.go('${AppRoutes.profile}/${widget.uid}'), // <-- Nút đi đến Edit Profile
+                    onTap: () => context.go(
+                      '${AppRoutes.profile}/${widget.uid}',
+                    ), // <-- Nút đi đến Edit Profile
                     child: Row(
                       children: [
                         CircleAvatar(
                           radius: 22,
                           backgroundColor: Colors.grey[700],
-                          backgroundImage: (photoUrl != null && photoUrl.isNotEmpty)
+                          backgroundImage:
+                              (photoUrl != null && photoUrl.isNotEmpty)
                               ? NetworkImage(photoUrl)
                               : null,
                           child: (photoUrl == null || photoUrl.isEmpty)
@@ -176,14 +160,21 @@ class _SettingPageState extends State<SettingPage> {
                 InkWell(
                   onTap: _navigateToActivity, // <-- Nút đi đến trang Hoạt động
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4.0,
+                      horizontal: 8.0,
+                    ),
                     child: Row(
                       children: [
                         const Text(
                           'Xem hoạt động',
                           style: TextStyle(color: Colors.white70, fontSize: 13),
                         ),
-                        const Icon(Icons.chevron_right, color: Colors.white70, size: 20),
+                        const Icon(
+                          Icons.chevron_right,
+                          color: Colors.white70,
+                          size: 20,
+                        ),
                       ],
                     ),
                   ),
@@ -196,11 +187,28 @@ class _SettingPageState extends State<SettingPage> {
           // --- 2. Nhóm 1 (Thanh toán, Lịch sử, ...) ---
           _buildSectionContainer(
             children: [
-              _buildMenuOption(Icons.payment, 'Thanh toán', Colors.blue.shade700),
+              _buildMenuOption(
+                Icons.payment,
+                'Thanh toán',
+                Colors.blue.shade700,
+              ),
               _buildMenuOption(Icons.history, 'Lịch sử', Colors.blue.shade700),
-              _buildMenuOption(Icons.card_giftcard, 'Tiền thưởng', Colors.blue.shade700),
-              _buildMenuOption(Icons.local_offer, 'Voucher', Colors.blue.shade700),
-              _buildMenuOption(Icons.delivery_dining, 'Giao hàng', Colors.blue.shade700, hasDivider: false),
+              _buildMenuOption(
+                Icons.card_giftcard,
+                'Tiền thưởng',
+                Colors.blue.shade700,
+              ),
+              _buildMenuOption(
+                Icons.local_offer,
+                'Voucher',
+                Colors.blue.shade700,
+              ),
+              _buildMenuOption(
+                Icons.delivery_dining,
+                'Giao hàng',
+                Colors.blue.shade700,
+                hasDivider: false,
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -208,8 +216,17 @@ class _SettingPageState extends State<SettingPage> {
           // --- 3. Nhóm 2 (Mời bạn bè, Góp ý) ---
           _buildSectionContainer(
             children: [
-              _buildMenuOption(Icons.people_alt, 'Mời bạn bè', Colors.orange.shade800),
-              _buildMenuOption(Icons.email, 'Góp ý', Colors.orange.shade800, hasDivider: false),
+              _buildMenuOption(
+                Icons.people_alt,
+                'Mời bạn bè',
+                Colors.orange.shade800,
+              ),
+              _buildMenuOption(
+                Icons.email,
+                'Góp ý',
+                Colors.orange.shade800,
+                hasDivider: false,
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -217,9 +234,19 @@ class _SettingPageState extends State<SettingPage> {
           // --- 4. Nhóm 3 (Chính sách, Cài đặt, Đăng xuất) ---
           _buildSectionContainer(
             children: [
-              _buildMenuOption(Icons.policy, 'Chính sách', Colors.grey.shade700),
+              _buildMenuOption(
+                Icons.policy,
+                'Chính sách',
+                Colors.grey.shade700,
+              ),
               _buildMenuOption(Icons.settings, 'Cài đặt', Colors.grey.shade700),
-              _buildMenuOption(Icons.logout, 'Đăng xuất', Colors.grey.shade700, hasDivider: false, onTap: () => _auth.signOut()),
+              _buildMenuOption(
+                Icons.logout,
+                'Đăng xuất',
+                Colors.grey.shade700,
+                hasDivider: false,
+                onTap: () => _auth.signOut(),
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -228,20 +255,29 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-
   // (MỚI) Widget chung cho các mục trong menu (ListTile)
-  Widget _buildMenuOption(IconData icon, String title, Color iconColor, {bool hasDivider = true, VoidCallback? onTap}) {
+  Widget _buildMenuOption(
+    IconData icon,
+    String title,
+    Color iconColor, {
+    bool hasDivider = true,
+    VoidCallback? onTap,
+  }) {
     return InkWell(
-      onTap: onTap ?? () {
-        // TODO: Xử lý khi bấm vào các mục menu khác
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Đã bấm vào $title')),
-        );
-      },
+      onTap:
+          onTap ??
+          () {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Đã bấm vào $title')));
+          },
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: Row(
               children: [
                 CircleAvatar(
@@ -286,9 +322,7 @@ class _SettingPageState extends State<SettingPage> {
           ),
         ],
       ),
-      child: Column(
-        children: children,
-      ),
+      child: Column(children: children),
     );
   }
 }

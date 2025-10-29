@@ -9,7 +9,7 @@ class UserModel extends User {
     required super.email,
     required super.photoURL,
     required super.phoneNumber,
-    required super.createdAt, 
+    required super.createdAt,
   });
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
@@ -39,5 +39,5 @@ class UserModel extends User {
     photoURL: e.photoURL,
     phoneNumber: e.phoneNumber,
     createdAt: e.createdAt,
-  );  
+  );
 }

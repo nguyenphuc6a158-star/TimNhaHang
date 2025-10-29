@@ -10,15 +10,16 @@ abstract class UsersRemoteDatasource {
 
 class UsersRemoteDataSourceImpl implements UsersRemoteDatasource {
   final FirebaseRemoteDS<UserModel> _remoteSource;
-  UsersRemoteDataSourceImpl() : _remoteSource = FirebaseRemoteDS<UserModel>(
-    collectionName: 'users',
-    fromFirestore: (doc) => UserModel.fromFirestore(doc),
-    toFirestore: (model) => model.toJson(),
-  );
+  UsersRemoteDataSourceImpl()
+    : _remoteSource = FirebaseRemoteDS<UserModel>(
+        collectionName: 'users',
+        fromFirestore: (doc) => UserModel.fromFirestore(doc),
+        toFirestore: (model) => model.toJson(),
+      );
 
   @override
   Future<void> add(UserModel user) async {
-    await _remoteSource.add(user);
+    await _remoteSource.set(user.uid, user);
   }
 
   @override

@@ -73,8 +73,11 @@ class AppGoRouter {
             },
           ),
           GoRoute(
-path: AppRoutes.history,
-            builder: (context, state) => const HistoryPage(),
+            path: '${AppRoutes.history}/:uid',
+            builder: (context, state) {
+              final uid = state.pathParameters['uid']!;
+              return HistoryPage(uid: uid);
+            }
           ),
           GoRoute(
             path: '${AppRoutes.profile}/:uid',

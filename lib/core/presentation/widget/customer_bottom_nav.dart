@@ -71,7 +71,7 @@ class _CustomerBottomNavState extends State<CustomerBottomNav> {
         context.go('${AppRoutes.saved}/${widget.uid}');
         break;
       case 2:
-        context.go(AppRoutes.history);
+        context.go('${AppRoutes.history}/${widget.uid}');
         break;
       case 3:
         // (CẬP NHẬT) Truyền uid vào route

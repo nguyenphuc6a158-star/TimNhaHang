@@ -66,11 +66,14 @@ class AppGoRouter {
             builder: (context, state) => const HomePage(),
           ),
           GoRoute(
-            path: AppRoutes.saved,
-            builder: (context, state) => const RestaurantSaveListPage(),
+            path: '${AppRoutes.saved}/:uid',
+            builder: (context, state) {
+              final uid = state.pathParameters['uid']!;
+              return RestaurantSaveListPage(uid: uid);
+            },
           ),
           GoRoute(
-            path: AppRoutes.history,
+path: AppRoutes.history,
             builder: (context, state) => const HistoryPage(),
           ),
           GoRoute(

@@ -86,4 +86,12 @@ class FirebaseRemoteDS<T> {
       return [];
     }
   }
+
+  Future<List<T>> getAllById(String field, String id) async {
+    final snapshot = await _collection.where(field, isEqualTo: id).get();
+    final list = snapshot.docs.map((doc) => fromFirestore(doc)).toList();
+
+    // 3. Trả về đúng kiểu List<T>
+    return list;
+  }
 }

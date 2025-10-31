@@ -11,13 +11,13 @@ class BottomNavigatorNavbarDetal extends StatelessWidget {
     required this.restaurantID,
     required this.uId,
   });
-  void openOrderForm(BuildContext context){
+
+  void openOrderForm(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => OrderForm(
-        resid: restaurantID,
-        uid: uId,
-      )),
+      MaterialPageRoute(
+        builder: (_) => OrderForm(resid: restaurantID, uid: uId),
+      ),
     );
   }
 
@@ -41,13 +41,10 @@ class BottomNavigatorNavbarDetal extends StatelessWidget {
         },
         label: const Text('Đặt bàn'),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF42A5F5),
+          backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          textStyle: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),

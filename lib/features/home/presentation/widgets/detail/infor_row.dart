@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class InfoRow extends StatelessWidget {
@@ -18,7 +17,10 @@ class InfoRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(fontSize: 16, color: Colors.black87),
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
             ),
           ),
         ],

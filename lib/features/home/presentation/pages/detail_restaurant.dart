@@ -2,9 +2,11 @@
 
 import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:timnhahang/features/comment/presentation/pages/comment_form_page.dart';
 import 'package:timnhahang/features/home/domain/entities/restaurant.dart';
 import 'package:timnhahang/features/home/domain/usecase/update_restaurant.dart';
+import 'package:timnhahang/features/home/presentation/pages/form_order.dart';
 import 'package:timnhahang/features/home/presentation/widgets/detail/body_detail.dart';
 import 'package:timnhahang/features/home/presentation/widgets/detail/bottom_navigator_navbar_detal.dart';
 import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dart';
@@ -15,7 +17,6 @@ import 'package:timnhahang/features/restaurantsave/data/repositories/restaurant_
 import 'package:timnhahang/features/restaurantsave/domain/entities/save.dart';
 import 'package:timnhahang/features/restaurantsave/domain/usecase/add_saved_restaurant.dart';
 import 'package:timnhahang/features/profile/domain/entities/user.dart';
-
 
 class DetailRestaurantPage extends StatefulWidget {
   final Restaurant restaurant;
@@ -102,6 +103,16 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
       }
     }
   }
+
+  void openOrderForm() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OrderForm(resid: widget.restaurant.id, uid: uid),
+      ),
+    );
+  }
+
   Future<void> _openCommentForm() async {
     final result = await Navigator.push(
       context,
@@ -114,9 +125,23 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
     );
     if (result == true) {
       setState(() {
+        // Tăng giá trị của Key (ví dụ: 0 -> 1)
+        // Việc này buộc Flutter phải HỦY state cũ của CommentSection
+        // và TẠO MỘT STATE MỚI, chạy lại initState và FutureBuilder!
         _commentSectionKey = ValueKey<int>(_commentSectionKey.value + 1);
       });
     }
+  }
+
+  Future<void> _onShare() async {
+    // Tạo nội dung bạn muốn chia sẻ
+    final String shareContent =
+        "Gợi ý cho bạn nè!\n"
+        "Nhà hàng: ${widget.restaurant.name}\n"
+        "Địa chỉ: ${widget.restaurant.address}";
+
+    // Gọi hàm Share.share
+    await Share.share(shareContent);
   }
 
   @override
@@ -135,14 +160,15 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
         actions: const [],
       ),
       body: BodyDetail(
-        restaurant: widget.restaurant, 
-        save: _save, 
-        openCommentForm: _openCommentForm, 
-        commentSectionKey: _commentSectionKey
+        restaurant: widget.restaurant,
+        save: _save,
+        openCommentForm: _openCommentForm,
+        commentSectionKey: _commentSectionKey,
+        share: _onShare,
       ),
       bottomNavigationBar: BottomNavigatorNavbarDetal(
         restaurantID: widget.restaurant.id,
-        uId: uid
+        uId: uid,
       ),
     );
   }

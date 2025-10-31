@@ -6,15 +6,17 @@ import 'package:timnhahang/features/home/domain/entities/restaurant.dart';
 import 'package:timnhahang/features/home/presentation/widgets/detail/build_action_button.dart';
 import 'package:timnhahang/features/home/presentation/widgets/detail/infor_row.dart';
 
-class BodyDetail extends StatelessWidget{
+class BodyDetail extends StatelessWidget {
   final Restaurant restaurant;
   final Future<void> Function() save;
   final Future<void> Function() openCommentForm;
+  final Future<void> Function() share;
   final ValueKey<int> commentSectionKey;
   const BodyDetail({
     super.key,
     required this.restaurant,
     required this.save,
+    required this.share,
     required this.openCommentForm,
     required this.commentSectionKey,
   });
@@ -99,10 +101,7 @@ class BodyDetail extends StatelessWidget{
                   ),
                 ),
                 const Divider(height: 20),
-                InfoRow(
-                  icon: Icons.location_on,
-                  label: restaurant.address,
-                ),
+                InfoRow(icon: Icons.location_on, label: restaurant.address),
                 InfoRow(
                   icon: Icons.fastfood,
                   label: 'Thể loại: ${restaurant.category}',
@@ -121,15 +120,22 @@ class BodyDetail extends StatelessWidget{
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     BuildActionButton(
-                      icon: Icons.comment, 
-                      label: 'Bình luận', 
+                      icon: Icons.comment,
+                      label: 'Bình luận',
                       color: Color(0xFF42A5F5),
-                      onTap: () => openCommentForm()),
+                      onTap: () => openCommentForm(),
+                    ),
                     BuildActionButton(
                       icon: Icons.bookmark,
                       label: 'Lưu lại',
                       color: Color(0xFF42A5F5),
                       onTap: () => save(),
+                    ),
+                    BuildActionButton(
+                      icon: Icons.share,
+                      label: 'Chia sẻ',
+                      color: Color(0xFF4CAF50), // Màu xanh lá
+                      onTap: () => share(),
                     ),
                   ],
                 ),

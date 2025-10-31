@@ -1,14 +1,15 @@
-// ignore_for_file: unused_field, deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dart';
 import 'package:timnhahang/features/profile/data/repositories/user_repository_impl.dart';
-
 import 'package:timnhahang/features/profile/domain/usecase/get_user_profile.dart';
 import 'package:timnhahang/features/profile/domain/entities/user.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timnhahang/core/routing/app_routes.dart';
+
+// (MỚI) Imports cho Provider
+import 'package:provider/provider.dart';
+import 'package:timnhahang/core/providers/theme_provider.dart'; // Đảm bảo đường dẫn này đúng
 
 class SettingPage extends StatefulWidget {
   final String uid;
@@ -23,6 +24,7 @@ class _SettingPageState extends State<SettingPage> {
   User? _currentUserProfile;
   bool _isLoading = true;
   String? _errorMessage;
+  // (ĐÃ XÓA) bool _isDarkMode = false; // Không cần state cục bộ nữa
 
   // Usecase
   late final GetUserProfile _getUserProfile;
@@ -67,33 +69,36 @@ class _SettingPageState extends State<SettingPage> {
     }
   }
 
-  // (MỚI) Hàm điều hướng đến trang "Hoạt động"
   void _navigateToActivity() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Điều hướng đến trang Hoạt động...')),
     );
   }
 
-  // (CẬP NHẬT) Hàm build UI chính
+  // (ĐÃ XÓA) Hàm _onThemeChanged không cần thiết nữa
+
   @override
   Widget build(BuildContext context) {
     // Lấy theme cho màu sắc
     final theme = Theme.of(context);
-    final primaryColor = theme.primaryColor; // Giả sử màu tím là primaryColor
+    final primaryColor = theme.primaryColor;
 
     return Scaffold(
       // === 1. AppBar ===
       appBar: AppBar(
         title: const Text('Tài khoản'),
-        centerTitle: false, // Trong ảnh, title không ở giữa
+        centerTitle: false,
         elevation: 0,
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         flexibleSpace: Container(
-          // Thêm gradient cho giống ảnh
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [primaryColor, Colors.purple.shade700],
+              // Sử dụng màu chính và một biến thể tối hơn của nó
+              colors: [
+                primaryColor,
+                Color.lerp(primaryColor, Colors.black, 0.2)!,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -108,27 +113,28 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  // (CẬP NHẬT) Widget build phần body menu
   Widget _buildMenuBody() {
     final photoUrl = _currentUserProfile?.photoURL;
     final displayName = _currentUserProfile?.displayName ?? "";
 
+    // (CẬP NHẬT) Lấy theme provider để đọc trạng thái hiện tại
+    final themeProvider = context.watch<ThemeProvider>();
+
     return Container(
-      color: Colors.grey[200], // Màu nền xám nhạt cho toàn bộ body
+      // (CẬP NHẬT) Màu nền body nên dựa vào theme
+      color: Theme.of(context).scaffoldBackgroundColor.withAlpha(245),
       child: ListView(
         children: [
-          // --- 1. User Info Bar (Đã cập nhật) ---
+          // --- 1. User Info Bar ---
           Container(
-            color: Colors.black,
+            color: Colors.black, // Thanh này giữ nguyên màu đen
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                // (MỚI) Nút 1: Bấm vào Avatar/Tên
                 Expanded(
                   child: InkWell(
-                    onTap: () => context.go(
-                      '${AppRoutes.profile}/${widget.uid}',
-                    ), // <-- Nút đi đến Edit Profile
+                    onTap: () =>
+                        context.go('${AppRoutes.profile}/${widget.uid}'),
                     child: Row(
                       children: [
                         CircleAvatar(
@@ -143,7 +149,6 @@ class _SettingPageState extends State<SettingPage> {
                               : null,
                         ),
                         const SizedBox(width: 12),
-                        // Vẫn cần Expanded để đẩy nút "Xem hoạt động" sang phải
                         Expanded(
                           child: Text(
                             displayName,
@@ -158,9 +163,8 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                   ),
                 ),
-                // (MỚI) Nút 2: Bấm vào "Xem hoạt động"
                 InkWell(
-                  onTap: _navigateToActivity, // <-- Nút đi đến trang Hoạt động
+                  onTap: _navigateToActivity,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       vertical: 4.0,
@@ -191,25 +195,15 @@ class _SettingPageState extends State<SettingPage> {
             children: [
               _buildMenuOption(
                 Icons.payment,
-                'Thanh toán',
+                'Chi tiết tài khoản',
                 Colors.blue.shade700,
-              ),
-              _buildMenuOption(Icons.history, 'Lịch sử', Colors.blue.shade700),
-              _buildMenuOption(
-                Icons.card_giftcard,
-                'Tiền thưởng',
-                Colors.blue.shade700,
+                onTap: () => context.go('${AppRoutes.profile}/${widget.uid}'),
               ),
               _buildMenuOption(
-                Icons.local_offer,
-                'Voucher',
+                Icons.history,
+                'Lịch sử',
                 Colors.blue.shade700,
-              ),
-              _buildMenuOption(
-                Icons.delivery_dining,
-                'Giao hàng',
-                Colors.blue.shade700,
-                hasDivider: false,
+                onTap: () => context.go('${AppRoutes.history}/${widget.uid}'),
               ),
             ],
           ),
@@ -241,11 +235,22 @@ class _SettingPageState extends State<SettingPage> {
                 'Chính sách',
                 Colors.grey.shade700,
               ),
-              _buildMenuOption(Icons.settings, 'Cài đặt', Colors.grey.shade700),
+              // (CẬP NHẬT) Kết nối Switch với ThemeProvider
+              _buildSwitchOption(
+                Icons.dark_mode,
+                'Giao diện tối',
+                Colors.grey.shade700,
+                value: themeProvider.isDarkMode,
+                onChanged: (value) {
+                  // Dùng context.read khi gọi hàm, không cần lắng nghe
+                  context.read<ThemeProvider>().setTheme(value);
+                },
+                hasDivider: true,
+              ),
               _buildMenuOption(
                 Icons.logout,
                 'Đăng xuất',
-                Colors.grey.shade700,
+                Colors.red.shade700, // Đổi màu cho nút Đăng xuất
                 hasDivider: false,
                 onTap: () => _auth.signOut(),
               ),
@@ -257,7 +262,7 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  // (MỚI) Widget chung cho các mục trong menu (ListTile)
+  // Widget chung cho các mục trong menu (ListTile)
   Widget _buildMenuOption(
     IconData icon,
     String title,
@@ -291,7 +296,11 @@ class _SettingPageState extends State<SettingPage> {
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(fontSize: 16, color: Colors.black87),
+                    // (CẬP NHẬT) Màu chữ nên dựa vào theme
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
                   ),
                 ),
                 const Icon(Icons.chevron_right, color: Colors.grey, size: 22),
@@ -299,10 +308,11 @@ class _SettingPageState extends State<SettingPage> {
             ),
           ),
           if (hasDivider)
-            const Divider(
+            Divider(
               height: 1,
               thickness: 1,
-              color: Color(0xFFf0f0f0),
+              // (CẬP NHẬT) Màu đường kẻ nên dựa vào theme
+              color: Theme.of(context).dividerColor.withOpacity(0.5),
               indent: 56, // Căn lề cho đường kẻ
             ),
         ],
@@ -310,15 +320,67 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  // (MỚI) Widget chung cho các nhóm (Card)
+  // Widget chung cho các mục có nút Switch
+  Widget _buildSwitchOption(
+    IconData icon,
+    String title,
+    Color iconColor, {
+    required bool value,
+    required ValueChanged<bool> onChanged,
+    bool hasDivider = true,
+  }) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: iconColor,
+                child: Icon(icon, size: 18, color: Colors.white),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  title,
+                  // (CẬP NHẬT) Màu chữ nên dựa vào theme
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                  ),
+                ),
+              ),
+              Switch(
+                value: value,
+                onChanged: onChanged,
+                activeColor: Theme.of(context).primaryColor,
+              ),
+            ],
+          ),
+        ),
+        if (hasDivider)
+          Divider(
+            height: 1,
+            thickness: 1,
+            // (CẬP NHẬT) Màu đường kẻ nên dựa vào theme
+            color: Theme.of(context).dividerColor.withOpacity(0.5),
+            indent: 56,
+          ),
+      ],
+    );
+  }
+
+  // Widget chung cho các nhóm (Card)
   Widget _buildSectionContainer({required List<Widget> children}) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        // Viền mờ nhẹ cho đẹp hơn
+        // (CẬP NHẬT) Màu nền của Card nên dựa vào theme
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            // (CẬP NHẬT) Màu đổ bóng nên dựa vào theme
+            color: Theme.of(context).shadowColor.withOpacity(0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

@@ -1,12 +1,19 @@
 // ignore_for_file: unused_field
 
 import 'package:flutter/material.dart';
+import 'package:timnhahang/features/home/data/data/restaurant_remote_datasource.dart';
+import 'package:timnhahang/features/home/data/repositories/restaurant_repository_impl.dart';
+import 'package:timnhahang/features/home/domain/entities/restaurant.dart';
+import 'package:timnhahang/features/home/domain/usecase/get_restaurant.dart';
+import 'package:timnhahang/features/home/domain/usecase/update_restaurant.dart';
+import 'package:timnhahang/features/home/presentation/pages/detail_restaurant.dart';
 import 'package:timnhahang/features/restaurantsave/data/data/restaurant_save_remote_datasource.dart';
 import 'package:timnhahang/features/restaurantsave/data/repositories/restaurant_save_repository_impl.dart';
 import 'package:timnhahang/features/restaurantsave/domain/usecase/delete_saved_restaurant.dart';
 import 'package:timnhahang/features/restaurantsave/domain/usecase/get_saved_restaurants.dart';
-// <<< THÊM MỚI: Import entity 'Save' của bạn >>>
 import 'package:timnhahang/features/restaurantsave/domain/entities/save.dart';
+import 'package:timnhahang/features/restaurantsave/presentation/widget/body_list_save.dart';
+import 'package:timnhahang/features/restaurantsave/presentation/widget/dialog_confirm.dart';
 
 class RestaurantSaveListPage extends StatefulWidget {
   final String uid;
@@ -22,12 +29,16 @@ class RestaurantSaveListPage extends StatefulWidget {
 
 class _RestaurantSaveListPageState extends State<RestaurantSaveListPage> {
   // Use case (giữ nguyên)
-  late final _remote = RestaurantSaveRemoteDatasourceImpl();
-  late final _repo = RestaurantSaveRepositoryImpl(_remote);
-  late final _getSave = GetSavedRestaurants(_repo);
+  late final _remoteSave = RestaurantSaveRemoteDatasourceImpl();
+  late final _repoSave = RestaurantSaveRepositoryImpl(_remoteSave);
+  late final _getSave = GetSavedRestaurants(_repoSave);
   // Dòng này đã có, rất tốt
-  late final _deleteSave = DeleteSavedRestaurant(_repo);
+  late final _deleteSave = DeleteSavedRestaurant(_repoSave);
 
+  late final _remoteRestaurant = RestaurantsRemoteDataSourceImpl();
+  late final _repoRestaurant = RestaurantRepositoryImpl(_remoteRestaurant);
+  late final _getRestaurant = GetRestaurant(_repoRestaurant);
+  late final _updateRestaurant = UpdateRestaurant(_repoRestaurant);
   // Biến trạng thái (giữ nguyên)
   bool _isLoading = true;
   List<Save> _savedList = [];
@@ -71,31 +82,17 @@ class _RestaurantSaveListPageState extends State<RestaurantSaveListPage> {
     // 1. Hiển thị hộp thoại xác nhận
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Xác nhận xóa'),
-        content: Text(
-          'Bạn có chắc muốn bỏ lưu nhà hàng "${saveItem.restaurantName}"?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Hủy'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Xóa'),
-          ),
-        ],
-      ),
+      builder: (context) => DialogConfirm(saveItem: saveItem),
     );
+
     if (confirm != true) return;
+
     try {
       await _deleteSave(saveItem.id);
 
       // 4. Cập nhật UI: Xóa item khỏi danh sách
       setState(() {
-_savedList.remove(saveItem);
+        _savedList.remove(saveItem);
       });
 
       // 5. Hiển thị thông báo thành công
@@ -120,76 +117,21 @@ _savedList.remove(saveItem);
     }
   }
 
-  // Hàm _buildBody (Cập nhật bên trong ListView.builder)
-  Widget _buildBody() {
-    // ... (Các trạng thái loading, error, empty giữ nguyên) ...
-
-    // 4. Hiển thị danh sách
-    return RefreshIndicator(
-      onRefresh: _loadSavedData,
-      child: ListView.builder(
-        itemCount: _savedList.length,
-        itemBuilder: (context, index) {
-          final saveItem = _savedList[index];
-
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: ListTile(
-              // ... (leading, title, subtitle giữ nguyên) ...
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(
-                  saveItem.imageUrl,
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    width: 50,
-                    height: 50,
-                    color: Colors.grey[200],
-                    child: const Icon(
-                      Icons.restaurant_menu,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              ),
-              title: Text(
-                saveItem.restaurantName,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                'Đã lưu: ${saveItem.createdAt.toLocal().toString().split(' ')[0]}',
-              ),
-
-              // <<< THAY ĐỔI: Thay thế trailing icon bằng IconButton >>>
-              trailing: IconButton(
-                icon: const Icon(Icons.delete_outline),
-                color: Colors.red[700],
-                tooltip: 'Xóa',
-                onPressed: () {
-                  // Gọi hàm xóa
-                  _deleteItem(saveItem);
-                },
-              ),
-
-              onTap: () {
-                // Bạn vẫn có thể giữ logic điều hướng ở đây
-                // Ví dụ: Điều hướng đến trang chi tiết nhà hàng
-                // Navigator.push(context, ...);
-              },
-            ),
-          );
-        },
+  void _openDetailRestaurant(Restaurant restaurant) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetailRestaurantPage(
+          restaurant: restaurant,
+          updateRestaurant: _updateRestaurant,
+        ),
       ),
     );
   }
-
-  // Hàm build (giữ nguyên)
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-final primaryColor = theme.primaryColor;
+    final primaryColor = theme.primaryColor;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Đã Lưu'),
@@ -198,7 +140,13 @@ final primaryColor = theme.primaryColor;
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
       ),
-      body: _buildBody(),
+      body: BodyListSave(
+        loadSavedData: _loadSavedData, 
+        savedList: _savedList,
+        deleteItem: _deleteItem,
+        getRestaurant: _getRestaurant,
+        openDetailRestaurant: _openDetailRestaurant,
+      ),
     );
   }
 }

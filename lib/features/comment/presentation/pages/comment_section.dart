@@ -1,16 +1,12 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:timnhahang/features/comment/data/data/comment_remote_datasource.dart';
 import 'package:timnhahang/features/comment/data/repositories/comment_repository_impl.dart';
-// --- THÊM MỚI: Import entity 'Comment' ---
 import 'package:timnhahang/features/comment/domain/entities/comment.dart';
 import 'package:timnhahang/features/comment/domain/usecase/get_all_comment.dart';
 
 class CommentSection extends StatefulWidget {
   final String restaurantId;
 
-  // --- THAY ĐỔI: Sửa lại constructor (tôi bỏ 'primaryColor' đi để cho gọn) ---
   const CommentSection({super.key, required this.restaurantId});
 
   @override
@@ -22,40 +18,33 @@ class _CommentSectionState extends State<CommentSection> {
   late final _repo = CommentRepositoryImpl(_remote);
   late final _getComment = GetAllComment(_repo);
 
-  // --- THÊM MỚI: Biến để giữ 'Future' của danh sách bình luận ---
   late Future<List<Comment>> _commentsFuture;
 
   @override
   void initState() {
     super.initState();
-    // --- THÊM MỚI: Gọi use case MỘT LẦN khi widget được tạo ---
     _commentsFuture = _getComment(widget.restaurantId);
   }
 
   @override
   Widget build(BuildContext context) {
-    // --- THÊM MỚI: Định nghĩa 'primaryColor' cục bộ để sửa lỗi ---
-    // (Bạn có thể thay đổi màu này nếu muốn)
     const primaryColor = Color(0xFF42A5F5);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'ĐÁNH GIÁ & BÌNH LUẬN',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.black54,
+            color: Theme.of(context).textTheme.titleSmall?.color,
           ),
         ),
         const Divider(height: 1),
-
-        // --- THAY THẾ: Dùng FutureBuilder thay vì code mẫu ---
         FutureBuilder<List<Comment>>(
-          future: _commentsFuture, // Sử dụng Future đã gọi trong initState
+          future: _commentsFuture,
           builder: (context, snapshot) {
-            // 1. Trường hợp đang tải
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: Padding(
@@ -65,18 +54,15 @@ class _CommentSectionState extends State<CommentSection> {
               );
             }
 
-            // 2. Trường hợp có lỗi
             if (snapshot.hasError) {
               return Center(
                 child: Text('Lỗi tải bình luận: ${snapshot.error}'),
               );
             }
 
-            // 3. Trường hợp có dữ liệu
             if (snapshot.hasData) {
               final comments = snapshot.data!;
 
-              // 3a. Trường hợp không có bình luận nào
               if (comments.isEmpty) {
                 return const Center(
                   child: Padding(
@@ -89,36 +75,27 @@ class _CommentSectionState extends State<CommentSection> {
                 );
               }
 
-              // 3b. Hiển thị danh sách bình luận
               return ListView.builder(
-                shrinkWrap: true, // Quan trọng: để ListView co lại trong Column
-                physics:
-                    const NeverScrollableScrollPhysics(), // Tắt cuộn riêng của ListView
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: comments.length,
                 itemBuilder: (context, index) {
                   final comment = comments[index];
-                  // Gọi hàm _buildCommentItem với object 'comment'
                   return _buildCommentItem(comment);
                 },
               );
             }
-
-            // 4. Trường hợp mặc định (ít khi xảy ra)
             return const Center(child: Text('Đang tải...'));
           },
         ),
-
-        // --- KẾT THÚC THAY THẾ ---
         const SizedBox(height: 10),
-
-        // Nút xem tất cả bình luận
         Center(
           child: TextButton(
             onPressed: () {},
             child: const Text(
               'Xem tất cả bình luận',
               style: TextStyle(
-                color: primaryColor, // Sử dụng màu đã định nghĩa ở trên
+                color: primaryColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -128,13 +105,10 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  /// --- THAY ĐỔI: Hàm này giờ nhận vào một object 'Comment' ---
   Widget _buildCommentItem(Comment comment) {
-    // Định dạng ngày tháng (ví dụ: 30/10/2025)
     final String date =
         "${comment.createdAt.day}/${comment.createdAt.month}/${comment.createdAt.year}";
 
-    // Hàm buildStars (giữ nguyên như cũ)
     List<Widget> buildStars(double rating) {
       List<Widget> stars = [];
       int fullStars = rating.floor();
@@ -158,15 +132,12 @@ class _CommentSectionState extends State<CommentSection> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // --- THAY ĐỔI: Xử lý 'userImage' (String non-nullable) ---
           CircleAvatar(
             radius: 20,
-            // Nếu 'userImage' không rỗng, thì hiển thị NetworkImage
             backgroundImage: comment.userImage.isNotEmpty
                 ? NetworkImage(comment.userImage)
                 : null,
-            backgroundColor: Colors.blueAccent.withOpacity(0.1),
-            // Nếu 'userImage' rỗng, thì hiển thị chữ cái đầu của tên
+            backgroundColor: Colors.blueAccent.withValues(alpha: 0.1),
             child: comment.userImage.isEmpty
                 ? Text(
                     comment.userName.isNotEmpty
@@ -177,7 +148,7 @@ class _CommentSectionState extends State<CommentSection> {
                       fontWeight: FontWeight.bold,
                     ),
                   )
-                : null, // Ngược lại thì không hiển thị child
+                : null,
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -186,9 +157,10 @@ class _CommentSectionState extends State<CommentSection> {
               children: [
                 Text(
                   comment.userName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -205,12 +177,60 @@ class _CommentSectionState extends State<CommentSection> {
                 const SizedBox(height: 6),
                 Text(
                   comment.content,
-                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                  ),
                 ),
+                _buildCommentImage(comment.imageUrl),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCommentImage(String imageUrl) {
+    // Nếu không có ảnh, trả về một widget rỗng
+    if (imageUrl.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      // ignore: sized_box_for_whitespace
+      child: Container(
+        height: 150,
+        width: 250,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              // Container này sẽ tự động lấp đầy
+              return Container(
+                color: Theme.of(context).hoverColor.withValues(alpha: 0.5),
+                alignment: Alignment.center,
+                child: const CircularProgressIndicator.adaptive(),
+              );
+            },
+            errorBuilder: (context, error, stackTrace) {
+              // Container này cũng sẽ tự động lấp đầy
+              return Container(
+                color: Theme.of(context).hoverColor.withValues(alpha: 0.5),
+                alignment: Alignment.center,
+                child: const Icon(
+                  Icons.broken_image_outlined,
+                  color: Colors.grey,
+                  size: 40,
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

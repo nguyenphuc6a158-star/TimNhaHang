@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Bill {
   final String id;
   final String uid;

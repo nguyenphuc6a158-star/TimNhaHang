@@ -7,12 +7,12 @@ import 'package:timnhahang/features/home/domain/usecase/get_all_restaurant.dart'
 // Giả định: Bạn cần import UseCase tìm kiếm
 import 'package:timnhahang/features/home/domain/usecase/search_restaurant.dart';
 import 'package:timnhahang/features/home/domain/usecase/update_restaurant.dart';
-import 'package:timnhahang/features/home/presentation/widgets/customer_appBar_homepages.dart';
+import 'package:timnhahang/features/home/presentation/widgets/home/customer_appBar_homepages.dart';
 import 'package:timnhahang/features/home/presentation/pages/detail_restaurant.dart';
-import 'package:timnhahang/features/home/presentation/widgets/empty_result.dart';
-import 'package:timnhahang/features/home/presentation/widgets/restaurant_gridview.dart';
-import 'package:timnhahang/features/home/presentation/widgets/restaurant_not_found.dart';
-import 'package:timnhahang/features/home/presentation/widgets/srearch_result_list.dart';
+import 'package:timnhahang/features/home/presentation/widgets/home/empty_result.dart';
+import 'package:timnhahang/features/home/presentation/widgets/home/restaurant_gridview.dart';
+import 'package:timnhahang/features/home/presentation/widgets/home/restaurant_not_found.dart';
+import 'package:timnhahang/features/home/presentation/widgets/home/srearch_result_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

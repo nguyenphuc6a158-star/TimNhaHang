@@ -1,4 +1,6 @@
 // (GIỮ NGUYÊN) Imports từ code gốc của bạn
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'package:flutter/material.dart';
 import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dart';
 import 'package:timnhahang/features/profile/data/repositories/user_repository_impl.dart';

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:timnhahang/features/comment/data/data/comment_remote_datasource.dart';
 import 'package:timnhahang/features/comment/data/repositories/comment_repository_impl.dart';

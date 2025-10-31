@@ -77,8 +77,6 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  // (ĐÃ XÓA) Hàm _onThemeChanged không cần thiết nữa
-
   @override
   Widget build(BuildContext context) {
     // Lấy theme cho màu sắc
@@ -119,7 +117,6 @@ class _SettingPageState extends State<SettingPage> {
     final photoUrl = _currentUserProfile?.photoURL;
     final displayName = _currentUserProfile?.displayName ?? "";
 
-    // (CẬP NHẬT) Lấy theme provider để đọc trạng thái hiện tại
     final themeProvider = context.watch<ThemeProvider>();
 
     return Container(

@@ -7,7 +7,7 @@ class RestaurantRepositoryImpl extends RestaurantRepository {
   final RestaurantRemoteDatasource remoteDataSource;
   RestaurantRepositoryImpl(this.remoteDataSource);
   @override
-  Future<List<Restaurant>> getRestaurants() async {
+  Future<List<Restaurant>> getRestaurants() async {//hàm getRestaurants được gọi
     List<RestaurantModel> restaurantModels = await remoteDataSource.getAll();
     return restaurantModels;
   }

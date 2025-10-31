@@ -42,9 +42,9 @@ class _HomePageState extends State<HomePage> {
   List<Restaurant> _searchResults = [];
 
   @override
-  void initState() {
+  void initState() { // Khởi tạo trạng thái
     super.initState();
-    _loadRestaurants();
+    _loadRestaurants();// load dữ liệu nhà hàng
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -58,7 +58,8 @@ class _HomePageState extends State<HomePage> {
   // --- Các hàm logic ---
   Future<void> _loadRestaurants() async {
     if (!mounted) return;
-    setState(() => isLoading = true);
+    setState(() => isLoading = true);// Bắt đầu tải dữ liệu vẽ lại trang gọi đến build nó gọi _buildBody kiểm
+    // tra isLoading để hiện CircularProgressIndicator dòng 132
 
     try {
       final restaurants = await _getAllRestaurants();

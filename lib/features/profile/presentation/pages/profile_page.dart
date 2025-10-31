@@ -6,9 +6,6 @@ import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dar
 import 'package:timnhahang/features/profile/data/repositories/user_repository_impl.dart';
 import 'package:timnhahang/features/profile/domain/entities/user.dart';
 import 'package:timnhahang/features/profile/domain/usecase/get_user_profile.dart';
-
-// (THÊM) Imports từ code mẫu
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:timnhahang/features/profile/domain/usecase/update_user_profile.dart';
 
@@ -202,61 +199,6 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     }
 
-    if (_errorMessage != null && _currentUserProfile == null) {
-      // Trường hợp Profile không tồn tại trên Firestore
-      return Scaffold(
-        appBar: AppBar(title: const Text('Tạo Profile')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.red, fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    final currentUserAuth = _auth.currentUser;
-
-                    if (currentUserAuth == null ||
-                        currentUserAuth.uid != widget.uid) {
-                      setState(() {
-                        _errorMessage =
-                            "Lỗi: Không thể tạo profile. Vui lòng đăng xuất và đăng nhập lại.";
-                      });
-                      return;
-                    }
-
-                    _currentUserProfile = User(
-                      uid: widget.uid,
-                      email: currentUserAuth.email!,
-                      createdAt: Timestamp.now(),
-                      photoURL: currentUserAuth.photoURL,
-                      displayName: currentUserAuth.displayName,
-                    );
-                    _displayNameController.text =
-                        _currentUserProfile!.displayName ?? '';
-                    _avatarUrlController.text =
-                        _currentUserProfile!.photoURL ?? '';
-
-                    _isLoading = false;
-                    _errorMessage = null;
-                    setState(() {});
-                  },
-                  child: const Text('Bắt đầu cập nhật Profile'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
-    // Nếu _currentUserProfile != null
     final photoUrl = _currentUserProfile?.photoURL;
     final theme = Theme.of(context);
 

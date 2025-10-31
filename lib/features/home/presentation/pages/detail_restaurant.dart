@@ -3,7 +3,6 @@
 import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/material.dart';
 import 'package:timnhahang/features/comment/presentation/pages/comment_form_page.dart';
-import 'package:timnhahang/features/history/presentation/page/form_order.dart';
 import 'package:timnhahang/features/home/domain/entities/restaurant.dart';
 import 'package:timnhahang/features/home/domain/usecase/update_restaurant.dart';
 import 'package:timnhahang/features/home/presentation/widgets/detail/body_detail.dart';
@@ -103,12 +102,6 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
       }
     }
   }
-  void openOrderForm () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => OrderForm()),
-    );
-  }
   Future<void> _openCommentForm() async {
     final result = await Navigator.push(
       context,
@@ -121,9 +114,6 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
     );
     if (result == true) {
       setState(() {
-        // Tăng giá trị của Key (ví dụ: 0 -> 1)
-        // Việc này buộc Flutter phải HỦY state cũ của CommentSection
-        // và TẠO MỘT STATE MỚI, chạy lại initState và FutureBuilder!
         _commentSectionKey = ValueKey<int>(_commentSectionKey.value + 1);
       });
     }
@@ -150,7 +140,10 @@ class _DetailRestaurantPageState extends State<DetailRestaurantPage> {
         openCommentForm: _openCommentForm, 
         commentSectionKey: _commentSectionKey
       ),
-      bottomNavigationBar: BottomNavigatorNavbarDetal(openOrderForm: openOrderForm),
+      bottomNavigationBar: BottomNavigatorNavbarDetal(
+        restaurantID: widget.restaurant.id,
+        uId: uid
+      ),
     );
   }
 }

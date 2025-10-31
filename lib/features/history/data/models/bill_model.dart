@@ -16,17 +16,16 @@ class BillModel extends Bill{
       id: doc.id,
       uid: data['uid'] ?? '',
       resid: data['resid'] ?? '',
-      createdAt: data['createdAt'] ?? '',
-      bookingTime: data['bookingTime'] ?? '',
+      createdAt: (data['created_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      bookingTime: (data['bookingTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
-
+ 
   Map<String, dynamic> toJson() => {
-    'id': id,
     'uid': uid,
     'resid': resid,
-    'createdAt': createdAt,
-    'bookingTime': bookingTime,
+    'createdAt': Timestamp.fromDate(createdAt),
+    'bookingTime': Timestamp.fromDate(bookingTime),
   };
 
   factory BillModel.fromEntity(Bill e) => BillModel(

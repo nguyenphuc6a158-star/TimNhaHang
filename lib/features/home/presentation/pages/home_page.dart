@@ -15,7 +15,9 @@ import 'package:timnhahang/features/home/presentation/widgets/home/restaurant_no
 import 'package:timnhahang/features/home/presentation/widgets/home/srearch_result_list.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({
+    super.key,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();

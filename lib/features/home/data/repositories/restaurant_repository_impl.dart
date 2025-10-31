@@ -13,6 +13,11 @@ class RestaurantRepositoryImpl extends RestaurantRepository {
   }
 
   @override
+  Future<Restaurant?> getRestaurant(String id)async {
+    RestaurantModel? restaurantModel = await remoteDataSource.getRestaurant(id);
+    return restaurantModel;
+  }
+  @override
   Future<void> updateNote(Restaurant restaurant) async {
     await remoteDataSource.update(RestaurantModel.fromEntity(restaurant));
   }

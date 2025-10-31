@@ -27,6 +27,12 @@ class BillRepositoryImpl extends BillReposiitory {
   }
 
   @override
+  Future<List<Bill>> getAllBillsByUid(String uid) async {
+    List<BillModel> billModels = await remoteDataSource.getAllBillsByUid(uid);
+    return billModels;
+  }
+
+  @override
   Future<List<Bill>> getBills() async {
     List<BillModel> billModels = await remoteDataSource.getAll();
     return billModels;
@@ -35,4 +41,5 @@ class BillRepositoryImpl extends BillReposiitory {
   Future<void> updateBill(Bill bill) async {
     await remoteDataSource.update(BillModel.fromEntity(bill));
   }
+  
 }

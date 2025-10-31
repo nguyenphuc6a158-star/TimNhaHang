@@ -1,14 +1,25 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:timnhahang/features/home/presentation/pages/form_order.dart';
 
 class BottomNavigatorNavbarDetal extends StatelessWidget {
-  final VoidCallback openOrderForm;
-  
+  final String restaurantID;
+  final String uId;
   const BottomNavigatorNavbarDetal({
     super.key,
-    required this.openOrderForm,
+    required this.restaurantID,
+    required this.uId,
   });
+  void openOrderForm(BuildContext context){
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => OrderForm(
+        resid: restaurantID,
+        uid: uId,
+      )),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +37,7 @@ class BottomNavigatorNavbarDetal extends StatelessWidget {
       ),
       child: ElevatedButton.icon(
         onPressed: () {
-          openOrderForm;
+          openOrderForm(context);
         },
         label: const Text('Đặt bàn'),
         style: ElevatedButton.styleFrom(

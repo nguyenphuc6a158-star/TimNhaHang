@@ -3,7 +3,8 @@ import 'package:timnhahang/features/home/data/models/restaurant_model.dart';
 
 abstract class RestaurantRemoteDatasource {
   Future<List<RestaurantModel>> getAll();
-  Future<void> update(RestaurantModel note);
+  Future<RestaurantModel?> getRestaurant(String id);
+  Future<void> update(RestaurantModel restaurant);
   Future<List<RestaurantModel>> search(String text);
 }
 
@@ -20,6 +21,12 @@ class RestaurantsRemoteDataSourceImpl implements RestaurantRemoteDatasource {
     List<RestaurantModel> restaurants = [];
     restaurants = await _remoteSource.getAll();
     return restaurants;
+  }
+
+  @override
+  Future<RestaurantModel?> getRestaurant(String id) async {
+    RestaurantModel? restaurant = await _remoteSource.getById(id);
+    return restaurant;
   }
 
   @override

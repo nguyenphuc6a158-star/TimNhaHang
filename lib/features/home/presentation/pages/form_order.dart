@@ -1,10 +1,23 @@
-// ignore_for_file: avoid_print, use_build_context_synchronously
+// ignore_for_file: avoid_print, use_build_context_synchronously, unnecessary_new
 
 import 'package:flutter/material.dart';
-// KHÔNG CẦN IMPORT INTl NỮA
+import 'package:timnhahang/features/history/data/data/bill_remote_datasouce.dart';
+import 'package:timnhahang/features/history/data/respositories/bill_repository_impl.dart';
+import 'package:timnhahang/features/history/domain/entities/bill.dart';
+import 'package:timnhahang/features/history/domain/usecase/add_bill.dart';
 
 class OrderForm extends StatefulWidget {
-  const OrderForm({super.key});
+  final String resid;
+  final String uid;
+  late final _remote = BillsRemoteDataSourceImpl();
+  late final _repo = BillRepositoryImpl(_remote);
+  late final _addBill = AddBill(_repo);
+
+  OrderForm({
+    super.key,
+    required this.resid,
+    required this.uid,
+  });
 
   @override
   State<OrderForm> createState() => _OrderFormState();
@@ -12,11 +25,7 @@ class OrderForm extends StatefulWidget {
 
 class _OrderFormState extends State<OrderForm> {
   final _formKey = GlobalKey<FormState>();
-
-  // Dùng để hiển thị ngày giờ đã chọn lên ô input
   final _bookingTimeController = TextEditingController();
-
-  // Biến để lưu giá trị DateTime thực tế
   DateTime? _selectedDateTime;
 
   @override
@@ -25,9 +34,7 @@ class _OrderFormState extends State<OrderForm> {
     super.dispose();
   }
 
-  /// Hàm chính: Mở cửa sổ chọn Ngày và Giờ
   Future<void> _pickBookingTime() async {
-    // 1. CHỌN NGÀY
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: _selectedDateTime ?? DateTime.now(),
@@ -37,7 +44,6 @@ class _OrderFormState extends State<OrderForm> {
 
     if (pickedDate == null) return;
 
-    // 2. CHỌN GIỜ
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(_selectedDateTime ?? DateTime.now()),
@@ -45,7 +51,6 @@ class _OrderFormState extends State<OrderForm> {
 
     if (pickedTime == null) return;
 
-    // 3. KẾT HỢP NGÀY VÀ GIỜ
     setState(() {
       _selectedDateTime = DateTime(
         pickedDate.year,
@@ -54,12 +59,7 @@ class _OrderFormState extends State<OrderForm> {
         pickedTime.hour,
         pickedTime.minute,
       );
-
-      // --- (ĐÂY LÀ DÒNG THAY ĐỔI) ---
-      // Hiển thị giờ theo định dạng mặc định (toString())
-      // Ví dụ: 2025-10-31 14:30:00.000
       _bookingTimeController.text = _selectedDateTime!.toString();
-      // --- KẾT THÚC THAY ĐỔI ---
     });
   }
 
@@ -68,13 +68,20 @@ class _OrderFormState extends State<OrderForm> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-
-    final bookingTime = _selectedDateTime;
-    print('Lưu đặt bàn lúc: $bookingTime');
+    
+    final addBill = widget._addBill;
+    final newBill = new Bill(
+      id: '', 
+      uid: widget.uid, 
+      resid: widget.resid, 
+      createdAt: DateTime.now(), 
+      bookingTime: _selectedDateTime!,
+    );
+    addBill(newBill);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đã lưu đặt bàn (Tạm thời)')),
+        const SnackBar(content: Text('Đã đặt bàn thành công')),
       );
       Navigator.pop(context);
     }
@@ -84,11 +91,10 @@ class _OrderFormState extends State<OrderForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đặt bàn'),
+        title: const Text('Chọn giờ đặt bàn'),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: Center(
         child: Form(
           key: _formKey,
           child: ListView(

@@ -9,7 +9,6 @@ import 'package:timnhahang/features/restaurantsave/domain/usecase/get_saved_rest
 import 'package:timnhahang/features/restaurantsave/domain/entities/save.dart';
 
 class RestaurantSaveListPage extends StatefulWidget {
-  // <<< THÊM MỚI: Nhận uid từ bên ngoài >>>
   final String uid;
 
   const RestaurantSaveListPage({

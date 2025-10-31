@@ -29,6 +29,7 @@ class RestaurantModel extends Restaurant {
       saved: data['saved'] ?? false,
     );
   }
+  
   Map<String, dynamic> toJson() => {
     'id': id,
     'address': address,

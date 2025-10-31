@@ -7,6 +7,7 @@ abstract class BillsRemoteDatasource {
   Future<void> add(BillModel bill);
   Future<void> update(BillModel bill);
   Future<void> delete(String id);
+  Future<List<BillModel>> getAllBillsByUid(String id);
 }
 
 class BillsRemoteDataSourceImpl implements BillsRemoteDatasource {
@@ -43,5 +44,11 @@ class BillsRemoteDataSourceImpl implements BillsRemoteDatasource {
   @override
   Future<void> delete(String id) async {
     await _remoteSource.delete(id);
+  }
+  
+  @override
+  Future<List<BillModel>> getAllBillsByUid(String uid) async{
+    List<BillModel> bills = await _remoteSource.getAllById('uid', uid);
+    return bills;
   }
 }

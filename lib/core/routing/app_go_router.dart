@@ -63,7 +63,9 @@ class AppGoRouter {
         routes: [
           GoRoute(
             path: AppRoutes.home,
-            builder: (context, state) => const HomePage(),
+            builder: (context, state) {
+              return HomePage();
+            }
           ),
           GoRoute(
             path: '${AppRoutes.saved}/:uid',

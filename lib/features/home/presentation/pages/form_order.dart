@@ -47,6 +47,15 @@ class _OrderFormState extends State<OrderForm> {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(_selectedDateTime ?? DateTime.now()),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: Theme(
+            data: Theme.of(context).copyWith(colorScheme: ColorScheme.light()),
+            child: child!,
+          ),
+        );
+      },
     );
 
     if (pickedTime == null) return;
@@ -63,7 +72,6 @@ class _OrderFormState extends State<OrderForm> {
     });
   }
 
-  /// Hàm lưu (Tạm thời chỉ in ra console và đóng lại)
   void _saveBooking() {
     if (!_formKey.currentState!.validate()) {
       return;

@@ -1,5 +1,3 @@
-
-
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
@@ -24,7 +22,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-  
+
   @override
   Widget build(BuildContext context) {
     if (isSearching) {
@@ -45,10 +43,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   hintText: 'Tìm kiếm nhà hàng...',
                   border: InputBorder.none,
                   hintStyle: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
                 style: TextStyle(
@@ -74,17 +71,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       return AppBar(
         title: const Text("Trang chủ"),
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: onStartSearch,
             tooltip: 'Tìm kiếm',
+            color: Colors.white,
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: isLoading ? null : onReload,
             tooltip: 'Tải lại',
+            color: Colors.white,
           ),
         ],
       );

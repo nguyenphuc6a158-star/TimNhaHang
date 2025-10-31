@@ -1,22 +1,30 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'package:timnhahang/core/providers/theme_provider.dart';
 import 'app.dart';
 import 'core/config/firebase_env.dart';
 
-Future<void>  main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
-      options: FirebaseOptions(apiKey: FirebaseEnv.apiKey,
+    options: FirebaseOptions(
+      apiKey: FirebaseEnv.apiKey,
       appId: FirebaseEnv.appId,
       messagingSenderId: FirebaseEnv.messagingSenderId,
       projectId: FirebaseEnv.projectId,
       authDomain: FirebaseEnv.authDomain,
       storageBucket: FirebaseEnv.storageBucket,
       measurementId: FirebaseEnv.measurementId,
-      ),  
-    );
-  
-  runApp(const MyApp());
+    ),
+  );
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      child: const MyApp(),
+    ),
+  );
 }

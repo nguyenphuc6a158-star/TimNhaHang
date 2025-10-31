@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:timnhahang/core/presentation/theme/app_theme.dart';
+import 'package:timnhahang/core/providers/theme_provider.dart';
 import 'package:timnhahang/core/routing/app_go_router.dart';
 // import 'core/routing/app_router.dart';
 
@@ -8,11 +10,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Clean Flutter',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      routerConfig: AppGoRouter.router,
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp.router(
+          title: 'Tìm Nhà Hàng',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+
+          themeMode: themeProvider.themeMode,
+
+          debugShowCheckedModeBanner: false,
+          routerConfig: AppGoRouter.router,
+        );
+      },
     );
   }
 }

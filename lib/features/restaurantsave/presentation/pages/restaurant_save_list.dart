@@ -42,7 +42,6 @@ class _RestaurantSaveListPageState extends State<RestaurantSaveListPage> {
   // Biến trạng thái (giữ nguyên)
   bool _isLoading = true;
   List<Save> _savedList = [];
-  String? _error;
 
   @override
   void initState() {
@@ -50,70 +49,36 @@ class _RestaurantSaveListPageState extends State<RestaurantSaveListPage> {
     _loadSavedData();
   }
 
-  // Hàm _loadSavedData (giữ nguyên)
   Future<void> _loadSavedData() async {
-    if (mounted) {
-      setState(() {
-        _isLoading = true;
-        _error = null;
-      });
-    }
-
-    try {
-      final result = await _getSave(widget.uid);
-      if (mounted) {
-        setState(() {
-          _savedList = result;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-          _isLoading = false;
-        });
-      }
-    }
+    final result = await _getSave(widget.uid);
+    setState(() {
+      _savedList = result;
+      _isLoading = false;
+    });
   }
 
-  // <<< THÊM MỚI: Hàm xử lý logic xóa >>>
   Future<void> _deleteItem(Save saveItem) async {
-    // 1. Hiển thị hộp thoại xác nhận
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => DialogConfirm(saveItem: saveItem),
     );
 
-    if (confirm != true) return;
-
-    try {
+    if (confirm == true) {
       await _deleteSave(saveItem.id);
-
-      // 4. Cập nhật UI: Xóa item khỏi danh sách
       setState(() {
         _savedList.remove(saveItem);
       });
+    } else{
+      return;
+    }
 
-      // 5. Hiển thị thông báo thành công
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đã xóa "${saveItem.restaurantName}"'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      // 6. Xử lý nếu có lỗi
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Lỗi khi xóa: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+    if (mounted){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Đã xóa "${saveItem.restaurantName}"'),
+          backgroundColor: Colors.green,
+        ),
+      );
     }
   }
 

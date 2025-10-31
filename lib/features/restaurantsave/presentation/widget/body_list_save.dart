@@ -31,7 +31,6 @@ class BodyListSave extends StatelessWidget {
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: ListTile(
-              // ... (leading, title, subtitle giữ nguyên) ...
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
                 child: Image.network(
@@ -57,14 +56,11 @@ class BodyListSave extends StatelessWidget {
               subtitle: Text(
                 'Đã lưu: ${saveItem.createdAt.toLocal().toString().split(' ')[0]}',
               ),
-
-              // <<< THAY ĐỔI: Thay thế trailing icon bằng IconButton >>>
               trailing: IconButton(
                 icon: const Icon(Icons.delete_outline),
                 color: Colors.red[700],
                 tooltip: 'Xóa',
                 onPressed: () {
-                  // Gọi hàm xóa
                   deleteItem(saveItem);
                 },
               ),
@@ -85,5 +81,4 @@ class BodyListSave extends StatelessWidget {
       ),
     );
   }
-  
 }

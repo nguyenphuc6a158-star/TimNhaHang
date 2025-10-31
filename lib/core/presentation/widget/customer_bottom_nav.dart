@@ -74,8 +74,6 @@ class _CustomerBottomNavState extends State<CustomerBottomNav> {
         context.go('${AppRoutes.history}/${widget.uid}');
         break;
       case 3:
-        // (CẬP NHẬT) Truyền uid vào route
-        // Giả sử route profile của bạn là '/profile/:uid'
         context.go('${AppRoutes.setting}/${widget.uid}');
         break;
     }

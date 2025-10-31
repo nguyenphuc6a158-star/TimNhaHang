@@ -7,6 +7,7 @@ class BillModel extends Bill{
     required super.uid,
     required super.resid,
     required super.createdAt,
+    required super.bookingTime,
   });
 
   factory BillModel.fromFirestore(DocumentSnapshot doc) {
@@ -16,6 +17,7 @@ class BillModel extends Bill{
       uid: data['uid'] ?? '',
       resid: data['resid'] ?? '',
       createdAt: data['createdAt'] ?? '',
+      bookingTime: data['bookingTime'] ?? '',
     );
   }
 
@@ -24,6 +26,7 @@ class BillModel extends Bill{
     'uid': uid,
     'resid': resid,
     'createdAt': createdAt,
+    'bookingTime': bookingTime,
   };
 
   factory BillModel.fromEntity(Bill e) => BillModel(
@@ -31,5 +34,6 @@ class BillModel extends Bill{
     uid: e.uid,
     resid: e.resid,
     createdAt: e.createdAt,
+    bookingTime: e.bookingTime,
   );  
 } 

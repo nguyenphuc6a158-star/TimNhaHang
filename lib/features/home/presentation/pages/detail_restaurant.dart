@@ -1,7 +1,10 @@
+// ignore_for_file: deprecated_member_use, unused_field
+
 import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/material.dart';
 import 'package:timnhahang/features/comment/presentation/pages/comment_form_page.dart';
 import 'package:timnhahang/features/comment/presentation/pages/comment_section.dart';
+import 'package:timnhahang/features/history/presentation/page/form_order.dart';
 import 'package:timnhahang/features/home/domain/entities/restaurant.dart';
 import 'package:timnhahang/features/home/domain/usecase/update_restaurant.dart';
 import 'package:timnhahang/features/profile/data/data/user_remote_datasource.dart';
@@ -129,7 +132,12 @@ late ValueKey<int> _commentSectionKey = const ValueKey<int>(0);
       }
     }
   }
-
+  openOrderForm () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => OrderForm()),
+    );
+  }
   Future<void> _openCommentForm() async {
     final result = await Navigator.push(
       context,
@@ -247,7 +255,7 @@ late ValueKey<int> _commentSectionKey = const ValueKey<int>(0);
                   const Text(
                     'THÔNG TIN CHUNG',
                     style: TextStyle(
-fontSize: 16,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.black54,
                     ),
@@ -319,7 +327,7 @@ fontSize: 16,
         ),
         child: ElevatedButton.icon(
           onPressed: () {
-            // Xử lý logic Đặt giao hàng tại đây
+            openOrderForm();
           },
           label: const Text('Đặt bàn'),
           style: ElevatedButton.styleFrom(
@@ -327,7 +335,7 @@ fontSize: 16,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             textStyle: const TextStyle(
-fontSize: 18,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
             shape: RoundedRectangleBorder(

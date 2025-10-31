@@ -7,6 +7,7 @@ import 'package:timnhahang/features/home/domain/usecase/get_all_restaurant.dart'
 // Giả định: Bạn cần import UseCase tìm kiếm
 import 'package:timnhahang/features/home/domain/usecase/search_restaurant.dart';
 import 'package:timnhahang/features/home/domain/usecase/update_restaurant.dart';
+import 'package:timnhahang/features/home/presentation/pages/customer_appBar_homepages.dart';
 import 'package:timnhahang/features/home/presentation/pages/detail_restaurant.dart';
 
 class HomePage extends StatefulWidget {
@@ -115,74 +116,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: _buildAppBar(), body: _buildBody());
-  }
-
-  AppBar _buildAppBar() {
-    if (_isSearching) {
-      // Giao diện AppBar khi đang tìm kiếm
-      return AppBar(
-        automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: _stopSearch,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-            Expanded(
-              child: TextField(
-                controller: _searchController,
-                autofocus: true,
-                decoration: InputDecoration(
-                  hintText: 'Tìm kiếm nhà hàng...',
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
-                ),
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-          ],
-        ),
-        surfaceTintColor: Colors.transparent,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        actions: [
-          if (_searchController.text.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => _searchController.clear(),
-              tooltip: 'Xóa',
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-        ],
+    return Scaffold(
+      appBar: CustomAppBar(
+        isSearching: _isSearching,
+        searchController: _searchController,
+        onStartSearch: _startSearch,
+        onStopSearch: _stopSearch,
+        onReload: _loadRestaurants,
+        isLoading: isLoading,
+      ), 
+      body: _buildBody()
       );
-    } else {
-      // Giao diện AppBar gốc
-      return AppBar(
-        title: const Text("Trang chủ"),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: _startSearch,
-            tooltip: 'Tìm kiếm',
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: isLoading ? null : _loadRestaurants,
-            tooltip: 'Tải lại',
-          ),
-        ],
-      );
-    }
   }
 
   // --- BUILD BODY (ĐÃ CẬP NHẬT) ---

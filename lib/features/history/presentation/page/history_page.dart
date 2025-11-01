@@ -13,13 +13,11 @@ import 'package:timnhahang/features/home/presentation/pages/detail_restaurant.da
 
 class HistoryPage extends StatefulWidget {
   final String uid;
-  const HistoryPage({
-    super.key,
-    required this.uid,
-  });
+  const HistoryPage({super.key, required this.uid});
   @override
   State<HistoryPage> createState() => _HistoryPageState();
 }
+
 class _HistoryPageState extends State<HistoryPage> {
   late final _remoteBill = BillsRemoteDataSourceImpl();
   late final _repoBill = BillRepositoryImpl(_remoteBill);
@@ -46,6 +44,7 @@ class _HistoryPageState extends State<HistoryPage> {
       isLoading = false;
     });
   }
+
   void openDetailRestaurant(Restaurant restaurant) {
     Navigator.push(
       context,
@@ -57,22 +56,24 @@ class _HistoryPageState extends State<HistoryPage> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đã Lưu'),
+        title: const Text('Lịch sử đặt bàn'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
       ),
-      body: isLoading ? const Center(child: CircularProgressIndicator()) 
-        : ListDataHistory(
-          listBill: listBill, 
-          listRestaurantFromBill: listRestaurantFromBill,
-          openDetailRestaurant: openDetailRestaurant,
-        )
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListDataHistory(
+              listBill: listBill,
+              listRestaurantFromBill: listRestaurantFromBill,
+              openDetailRestaurant: openDetailRestaurant,
+            ),
     );
   }
 }

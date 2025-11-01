@@ -18,28 +18,23 @@ import 'package:timnhahang/features/restaurantsave/presentation/widget/dialog_co
 class RestaurantSaveListPage extends StatefulWidget {
   final String uid;
 
-  const RestaurantSaveListPage({
-    super.key,
-    required this.uid, // Yêu cầu uid khi gọi widget này
-  });
+  const RestaurantSaveListPage({super.key, required this.uid});
 
   @override
   State<RestaurantSaveListPage> createState() => _RestaurantSaveListPageState();
 }
 
 class _RestaurantSaveListPageState extends State<RestaurantSaveListPage> {
-  // Use case (giữ nguyên)
   late final _remoteSave = RestaurantSaveRemoteDatasourceImpl();
   late final _repoSave = RestaurantSaveRepositoryImpl(_remoteSave);
   late final _getSave = GetSavedRestaurants(_repoSave);
-  // Dòng này đã có, rất tốt
+
   late final _deleteSave = DeleteSavedRestaurant(_repoSave);
 
   late final _remoteRestaurant = RestaurantsRemoteDataSourceImpl();
   late final _repoRestaurant = RestaurantRepositoryImpl(_remoteRestaurant);
   late final _getRestaurant = GetRestaurant(_repoRestaurant);
   late final _updateRestaurant = UpdateRestaurant(_repoRestaurant);
-  // Biến trạng thái (giữ nguyên)
   bool _isLoading = true;
   List<Save> _savedList = [];
 
@@ -68,11 +63,11 @@ class _RestaurantSaveListPageState extends State<RestaurantSaveListPage> {
       setState(() {
         _savedList.remove(saveItem);
       });
-    } else{
+    } else {
       return;
     }
 
-    if (mounted){
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Đã xóa "${saveItem.restaurantName}"'),
@@ -93,6 +88,7 @@ class _RestaurantSaveListPageState extends State<RestaurantSaveListPage> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -106,7 +102,7 @@ class _RestaurantSaveListPageState extends State<RestaurantSaveListPage> {
         foregroundColor: Colors.white,
       ),
       body: BodyListSave(
-        loadSavedData: _loadSavedData, 
+        loadSavedData: _loadSavedData,
         savedList: _savedList,
         deleteItem: _deleteItem,
         getRestaurant: _getRestaurant,

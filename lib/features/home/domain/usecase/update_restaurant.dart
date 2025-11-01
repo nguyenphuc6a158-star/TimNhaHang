@@ -8,7 +8,7 @@ class UpdateRestaurant{
   UpdateRestaurant(this.repository);
 
   Future<void> call(Restaurant restaurant) async {
-    await repository.updateNote(restaurant);
+    await repository.updateRestaurant(restaurant);
   }
 
 }
